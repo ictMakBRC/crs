@@ -34,6 +34,7 @@
                                         <li><i class="glyphicon glyphicon-time"></i> <b>Facility:</b> {{ $result->facility_name}}</li>
                                         <li><i class="glyphicon glyphicon-tags"></i> <b>Swbab District</b> {{ $result->swab_district}}</li>
                                         @if ($result->result != '')
+                                        <li> <a  href="{{url('patients/result/download/'.$result->wid)}}" class="action-icon"> <i class="mdi mdi-download"></i></a></li>
                                         <li><a target="_blanck" href="{{url('patients/result/print/'.$result->wid)}}" class="action-icon"> <i class="mdi mdi-printer"></i>Print Results</a> </li>
                                         @endif
                                         <li><a  href="{{url('patients/lab/export/'.$result->wid)}}" class="action-icon"> <i class="mdi mdi-application-export"></i>Export</a> </li>

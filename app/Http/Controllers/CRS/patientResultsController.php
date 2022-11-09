@@ -302,4 +302,36 @@ class patientResultsController extends Controller
         // return $pdf->download('patients.pdf');
         return view('crs.patientResult', compact('results'));
     }
+
+    public function download($id)
+    {
+        $name = wagonjwa::where('wagonjwas.id', $id)->first();
+        $results = wagonjwa::addSelect(
+                [
+                    'facility' => Facility::select('facility_name')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
+                    'createdby' => User::select('surname')->whereColumn('wagonjwas.created_by', 'users.id'),
+                    'createdbyfn' => User::select('first_name')->whereColumn('wagonjwas.created_by', 'users.id'),
+                    'accessionedby' => User::select('surname')->whereColumn('wagonjwas.accessioned_by', 'users.id'),
+                    'accessionedbyfn' => User::select('first_name')->whereColumn('wagonjwas.accessioned_by', 'users.id'),
+                    'enteredby' => User::select('surname')->whereColumn('wagonjwas.entered_by', 'users.id'),
+                    'enteredbyfn' => User::select('first_name')->whereColumn('wagonjwas.entered_by', 'users.id'),
+                    'result_addedby' => User::select('surname')->whereColumn('wagonjwas.result_added_by', 'users.id'),
+                    'result_addedbyfn' => User::select('first_name')->whereColumn('wagonjwas.result_added_by', 'users.id'),
+                    'swabber' => Swabber::select('full_name')->whereColumn('wagonjwas.collected_by', 'swabbers.id'),
+                ]
+    )->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
+    ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
+    ->select('*', 'platforms.platform_range as range', 'wagonjwas.phone_number as tell')
+    ->where('wagonjwas.id', $id)->get();
+        wagonjwa::where('id', $id)->increment('print_count', 1);
+        // return ['results'=>$results[0]];
+        // $pdf = PDF::loadView('crs.patientResult',['results'=>$results]);
+        // return $pdf->download('patients.pdf');
+        
+        $pdf = PDF::loadView('crs.patientResultDown',compact('results'));
+       // $pdf = \App::make('dompdf.wrapper');     
+        $pdf->getDOMPdf()->set_option('isPhpEnabled', true); 
+        return $pdf->download($name->surname.rand().'.pdf');
+        return view('crs.patientResultDown', compact('results'));
+    }
 }

@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('patients/lab/result/week', [patientResultsController::class, 'results_this_week']);
     Route::get('patients/result/months', [patientResultsController::class, 'results_this_month']);
     Route::get('patients/result/print/{id}', [patientResultsController::class, 'print']);
+    Route::get('patients/result/download/{id}', [patientResultsController::class, 'download']);
 
     Route::get('/layout', function () {
         return view('crs.layouts.newlayout');

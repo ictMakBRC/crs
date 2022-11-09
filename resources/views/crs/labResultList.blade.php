@@ -49,6 +49,7 @@
                                         <a href="{{url('patients/view/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
                                         <a href="{{route('send.rds',$patient->wid)}}" disabled class="action-icon {{$sub}}"> <i class="uil-plane-departure text-success"></i></a>
                                         <a target="_blanck" href="{{url('patients/result/print/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-printer"></i></a>
+                                        <a  href="{{url('patients/result/download/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-download"></i></a>
                                     </td>
                                 </tr>
                                 @endforeach
