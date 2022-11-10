@@ -6,12 +6,12 @@
 
 <title>Untitled Document</title>
 <style>
-  body{margin:0;font-family:Nunito,sans-serif;font-size:.9rem;font-weight:400;line-height:1.5;color:#6c757d;background-color:#ffffff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:Nunito,sans-serif;font-size:.8rem;font-weight:400;line-height:1.2;color:#6c757d;background-color:#ffffff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
   hr{margin:1rem 0;color:inherit;background-color:currentColor;border:0;opacity:.25}
   hr:not([size]){height:1px}
       .text_centered {
         position: absolute;
-        top: 56%;
+        top: 58%;
         left: 6%;
         /* transform: translate(-50%, -50%); */
         color: red
@@ -36,7 +36,7 @@
     @foreach($results as $result)
     <div class="row" style="line-height:0.9">
         @php($name = $result->surname.' '. $result->given_name.' '. $result->other_name.'/'.date('YmdHis'))
-          <p style="text-align:center;"><img src="{{asset('images/results/mak.png')}}" alt="Makerere University Logo" width="150px" style="vertical-align:middle;"></p>
+          <p style="text-align:center;"><img src="{{asset('images/results/mak.png')}}" alt="Makerere University Logo" width="120px" style="vertical-align:middle;"></p>
           <h3 style="text-align:center; font-family:times;">MAKERERE UNIVERSITY COLLEGE OF HEALTH SCIENCES</h3>
            <h4 style="text-align:center; font-family:times;">SCHOOL OF BIOMEDICAL SCIENCES<br>
            DEPARTMENT OF IMMUNOLOGY AND MOLECULAR BIOLOGY</h4>
@@ -83,7 +83,7 @@
           <tr>
             <td class="btop"><strong>Contact No:</strong>  {{$result->tell ?: 'No Available'}} </td>
             <td class="btop"><strong>{{$result->doc_type ?: 'Document'}} No:</strong> {{$result->doc_no}}</td>
-            <td class="btop"><strong>Collected By:</strong> {{ $result->swabber.' '.$result->collectedbyfn}}</td>
+            <td class="btop"><strong>Collected By:</strong> {{ $result->full_name}}</td>
           </tr>
           <tr class="btop">
             <td class="btop"><strong>Collection Site:</strong>  {{ $result->facility_name}} </td>

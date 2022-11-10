@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [AuthenticatedSessionController::class, 'home'])->middleware('guest')->name('home');
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'suspended_user']], function () {
     Route::get('/sendemail', [RegisteredUserController::class, 'send_email'])->middleware(['auth'])->name('sendemail');
     Route::get('/management/dashboard', [RegisteredUserController::class, 'index'])->middleware(['auth'])->name('manage.index');
     // Route::get('management/dashboard', function () { return redirect()->back()->with('error','Oops! Request could not be completed, Something went wrong');})->name('manage.index');
@@ -117,6 +117,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('lab/report/platifoms', [ReportController::class, 'platiform']);
 
     Route::get('lab/report/moh', [ReportController::class, 'moh']);
+
+    Route::get('lab/report/filter', [ReportController::class, 'filterPatients']);
+    Route::post('lab/report/filter', [ReportController::class, 'filterPatientsresults']);
 
     Route::get('lab/report/Patienttat', [ReportController::class, 'AvgtatSingle']);
     Route::get('lab/report/tat', [ReportController::class, 'Avgtat']);

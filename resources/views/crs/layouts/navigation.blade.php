@@ -189,7 +189,7 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="myreports">
                             <a href="{{url('lab/report/patients')}}" class="dropdown-item">Patient Report</a>
-                            <a href="{{url('lab/report/results')}}" class="dropdown-item">Result Report</a>
+                            <a href="{{url('lab/report/filter')}}" class="dropdown-item">Patient Filter</a>
                              <a href="{{url('lab/report/moh')}}" class="dropdown-item">MOH Report</a>
                             <div class="dropdown">
                                 <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="myTat" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
