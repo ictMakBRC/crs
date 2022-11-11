@@ -33,65 +33,67 @@ class ReportController extends Controller
         $platforms = Platform::all();
         $swabbers = Swabber::all();
 
-        return view('crs.labReportFilterPatients', compact('facilities', 'users', 'parents', 'platforms','swabbers'));
+        return view('crs.labReportFilterPatients', compact('facilities', 'users', 'parents', 'platforms', 'swabbers'));
     }
 
     public function filterPatientsresults(Request $request)
     {
         $from = Carbon::parse($request->input('from'))->toDateTimeString();
         $to = Carbon::parse($request->input('to'))->addHour(23)->addMinutes(59)->toDateTimeString();
-        if($request->facility_ex != '0'){
+        if ($request->facility_ex != '0') {
             $request->facility_id = 'all';
         }
-        if($request->entered_ex != '0'){
+        if ($request->entered_ex != '0') {
             $request->entered_by = 'all';
         }
-        if($request->swabber_ex != '0'){
+        if ($request->swabber_ex != '0') {
             $request->swabber_in = 'all';
         }
-        if($request->platform_ex != '0'){
+        if ($request->platform_ex != '0') {
             $request->platform = 'all';
         }
-       $Exptasks = wagonjwa::orderBy('facilities.id', 'desc')
-        ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
-        ->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
-        ->leftJoin('swabbers', 'wagonjwas.collected_by', '=', 'swabbers.id')
-        ->leftJoin('users', 'wagonjwas.created_by', '=', 'users.id')
-        ->whereBetween('wagonjwas.created_at', [$from, $to])
-        ->when($request->facility_id != 'all', function ($query) use ($request) {
-            $query->where('wagonjwas.facility_id',$request->facility_id);
-        })
-        ->when($request->facility_ex != '0', function ($query) use ($request) {
-            $query->where('wagonjwas.facility_id','!=',$request->facility_ex);
-        })
-        ->when($request->entered_by != 'all', function ($query) use ($request) {
-            $query->where('wagonjwas.created_by',$request->entered_by);
-        }) 
-        ->when($request->entered_ex != '0', function ($query) use ($request) {
-            $query->where('wagonjwas.created_by','!=',$request->entered_ex);
-        })         
-        ->when($request->swabber_in != 'all', function ($query) use ($request)  {
-            $query->where('wagonjwas.collected_by',$request->swabber_in);                
-        })
-        ->when($request->swabber_ex != '0', function ($query) use ($request)  {
-            $query->where('wagonjwas.collected_by','!=',$request->swabber_ex);                
-        })
-        ->when($request->platform != 'all', function ($query) use ($request)  {
-            $query->where('wagonjwas.platform',$request->platform);                
-        })
-        ->when($request->platform_ex != '0', function ($query) use ($request)  {
-            $query->where('wagonjwas.platform','!=',$request->platform_ex);                
-        })
-        ->when($request->result != 'all', function ($query) use ($request) {
-            $query->where('wagonjwas.result',$request->result);             
-        })->get();
-        $fileName ='All.csv';
-        $facility ='All.csv';
+        $Exptasks = wagonjwa::orderBy('facilities.id', 'desc')
+         ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
+         ->select('*', 'wagonjwas.id as wid', 'wagonjwas.surname as patientName')
+         ->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
+         ->leftJoin('swabbers', 'wagonjwas.collected_by', '=', 'swabbers.id')
+         ->leftJoin('users', 'wagonjwas.created_by', '=', 'users.id')
+         ->whereBetween('wagonjwas.created_at', [$from, $to])
+         ->when($request->facility_id != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.facility_id', $request->facility_id);
+         })
+         ->when($request->facility_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.facility_id', '!=', $request->facility_ex);
+         })
+         ->when($request->entered_by != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.created_by', $request->entered_by);
+         })
+         ->when($request->entered_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.created_by', '!=', $request->entered_ex);
+         })
+         ->when($request->swabber_in != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.collected_by', $request->swabber_in);
+         })
+         ->when($request->swabber_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.collected_by', '!=', $request->swabber_ex);
+         })
+         ->when($request->platform != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.platform', $request->platform);
+         })
+         ->when($request->platform_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.platform', '!=', $request->platform_ex);
+         })
+         ->when($request->result != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.result', $request->result);
+         })->get();
+        $fileName = 'All.csv';
+        $facility = 'All.csv';
         $patients = $Exptasks;
+
         return $this->export($Exptasks, $fileName);
+
         return view('crs.labReportPatientList', compact('patients', 'to', 'from', 'facility'));
     }
-
 
     public function Avgtat(Request $request)
     {
@@ -538,7 +540,7 @@ class ReportController extends Controller
                     ->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
                     ->leftJoin('swabbers', 'wagonjwas.collected_by', '=', 'swabbers.id')
                     ->leftJoin('users', 'wagonjwas.created_by', '=', 'users.id')
-                    ->select('*', 'wagonjwas.id as wid')
+                    ->select('*', 'wagonjwas.id as wid', 'wagonjwas.surname as patientName')
                     ->where('wagonjwas.result', $result)
                     ->whereBetween('wagonjwas.created_at', [$from, $to])
                     ->get();
@@ -551,13 +553,13 @@ class ReportController extends Controller
             ->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
             ->leftJoin('swabbers', 'wagonjwas.collected_by', '=', 'swabbers.id')
             ->leftJoin('users', 'wagonjwas.created_by', '=', 'users.id')
-                    ->select('*', 'wagonjwas.id as wid')
+                    ->select('*', 'wagonjwas.id as wid', 'wagonjwas.surname as patientName')
                     ->whereBetween('wagonjwas.created_at', [$from, $to])
                     ->get();
         }
-      
-        return $this->export($Exptasks, $fileName);   
-        }
+
+        return $this->export($Exptasks, $fileName);
+    }
 
      public function platiform(Request $request)
      {
@@ -571,15 +573,15 @@ class ReportController extends Controller
                 ->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
                 ->leftJoin('swabbers', 'wagonjwas.collected_by', '=', 'swabbers.id')
                 ->leftJoin('users', 'wagonjwas.created_by', '=', 'users.id')
-                 ->select('*', 'wagonjwas.id as wid')
+                ->select('*', 'wagonjwas.id as wid', 'wagonjwas.surname as patientName')
                  ->where('wagonjwas.platform', $result)
                  ->whereBetween('wagonjwas.created_at', [$from, $to])
                  ->get();
-                 return $this->export($Exptasks, $fileName);   
 
+         return $this->export($Exptasks, $fileName);
      }
 
-     function export($Exptasks, $fileName)
+     public function export($Exptasks, $fileName)
      {
          $headers = [
              'Content-type' => 'text/csv',
@@ -588,13 +590,13 @@ class ReportController extends Controller
              'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
              'Expires' => '0',
          ];
- 
-         $columns = ['PTID', 'LabNo', 'BatchNo', 'CollectionDate', 'DateRecieved', 'FacilityName', 'PatientName', 'Gender', 'PatientContact', 'Age', 'Patient District', 'Swab District', 'Swabbed By','Entered By','WorkSheet No.', 'Result', 'ResultDate', 'Passport',  'TestReason', 'Who', 'Platform_name'];
- 
+
+         $columns = ['PTID', 'LabNo', 'BatchNo', 'CollectionDate', 'DateRecieved', 'FacilityName', 'PatientName', 'Gender', 'PatientContact', 'Age', 'Patient District', 'Swab District', 'Swabbed By', 'Entered By', 'WorkSheet No.', 'Result', 'ResultDate', 'Passport',  'TestReason', 'Who', 'Platform_name'];
+
          $callback = function () use ($Exptasks, $columns) {
              $file = fopen('php://output', 'w');
              fputcsv($file, $columns);
- 
+
              foreach ($Exptasks as $task) {
                  $row['PTID'] = $task->pat_no;
                  $row['Lab No'] = $task->lab_no;
@@ -602,7 +604,7 @@ class ReportController extends Controller
                  $row['Collection date'] = $task->collection_date;
                  $row['Date recieved'] = $task->accessioned_at;
                  $row['Facility name'] = $task->facility_name;
-                 $row['Patient Name'] = $task->surname.' '.$task->given_name.' '.$task->other_name;
+                 $row['Patient Name'] = $task->patientName.' '.$task->given_name.' '.$task->other_name;
                  $row['Gender'] = $task->gender;
                  $row['Contact'] = $task->phone_number;
                  $row['Age'] = $task->age;
@@ -617,7 +619,7 @@ class ReportController extends Controller
                  $row['TestReason'] = $task->test_reason;
                  $row['Who'] = $task->who_tested;
                  $row['PlatformName'] = $task->platform_name;
- 
+
                  fputcsv($file, [
                      $row['PTID'],
                      $row['Lab No'],
@@ -642,10 +644,10 @@ class ReportController extends Controller
                      $row['PlatformName'],
                  ]);
              }
- 
+
              fclose($file);
          };
- 
+
          return response()->stream($callback, 200, $headers);
      }
 }
