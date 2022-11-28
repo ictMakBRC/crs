@@ -108,6 +108,25 @@ class ReportController extends Controller
                                         AVG(EntryToResult) AS EntryToResult
                                         FROM TAT_Per_Entry GROUP BY DateCreated
                                         ORDER BY DateCreated DESC'));
+     return $this->tatExport($Exptasks, $fileName);
+    }
+    public function AvgMonthlytat(Request $request)
+    {
+        $from = Carbon::parse($request->input('from'))->toDateTimeString();
+        $to = Carbon::parse($request->input('to'))->addHour(23)->toDateTimeString();
+        $fileName = 'Avg TAT.csv';
+        $Exptasks = DB::select(DB::raw('SELECT  DateCreated, 
+                                        AVG(EntryToReceipt) AS EntryToReceipt, 
+                                        AVG(ReceiptToVerification) AS ReceiptToVerification, 
+                                        AVG(VerificationToResult) AS VerificationToResult, 
+                                        AVG(ReceiptToResult) AS ReceiptToResult, 
+                                        AVG(EntryToResult) AS EntryToResult
+                                        FROM TAT_Per_Entry GROUP BY DateCreated
+                                        ORDER BY DateCreated DESC'));
+     return $this->tatExport($Exptasks, $fileName);
+    }
+
+    public function tatExport($Exptasks, $fileName){
         $headers = [
             'Content-type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=$fileName",
@@ -145,7 +164,6 @@ class ReportController extends Controller
         return response()->stream($callback, 200, $headers);
         //  return view('crs.labReportTatList',compact('time_difference','to','from'));
     }
-
     public function AvgtatSingle(Request $request)
     {
         $from = Carbon::parse($request->input('from'))->toDateTimeString();
