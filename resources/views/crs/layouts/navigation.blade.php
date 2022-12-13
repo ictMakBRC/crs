@@ -198,6 +198,9 @@
                                 <div class="dropdown-menu" aria-labelledby="myTat">                                    
                                     <a href="{{url('lab/report/tat')}}" class="dropdown-item">Average TAT</a>
                                     <a href="{{url('lab/report/Patienttat')}}" class="dropdown-item">TAT Per Entry</a>
+                                    <a href="{{url('lab/report/monthlyTat')}}" class="dropdown-item">TAT Per Month</a>
+                                    <a href="{{url('lab/report/QuarterlyTat')}}" class="dropdown-item">TAT Per Quarter</a>
+                                    <a href="{{url('lab/report/mean')}}" class="dropdown-item">TAT Analysis</a>
                                 </div>
                             </div>
                         </div>

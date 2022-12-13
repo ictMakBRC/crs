@@ -123,6 +123,13 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
 
     Route::get('lab/report/Patienttat', [ReportController::class, 'AvgtatSingle']);
     Route::get('lab/report/tat', [ReportController::class, 'Avgtat']);
+    Route::get('lab/report/monthlyTat', [ReportController::class, 'AvgMonthlytat']);
+    Route::get('lab/report/QuarterlyTat', [ReportController::class, 'AvgQuartertat']);
+
+    Route::get('lab/report/mean', [ReportController::class, 'tatMean'])->name('mean');
+    Route::get('lab/report/range', [ReportController::class, 'tatRange'])->name('range');
+    Route::get('lab/report/propotion', [ReportController::class, 'tatPropotion'])->name('propotion');
+
     Route::get('lab/report/patients', [ReportController::class, 'index']);
 
     Route::post('lab/report/parentList', [ReportController::class, 'parentList']);
