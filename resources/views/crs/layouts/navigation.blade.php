@@ -190,6 +190,7 @@
                         <div class="dropdown-menu" aria-labelledby="myreports">
                             <a href="{{url('lab/report/patients')}}" class="dropdown-item">Patient Report</a>
                             <a href="{{url('lab/report/filter')}}" class="dropdown-item">Patient Filter</a>
+                            <a href="{{route('patientReg')}}" class="dropdown-item">Cov-MDB Patients</a>
                              <a href="{{url('lab/report/moh')}}" class="dropdown-item">MOH Report</a>
                             <div class="dropdown">
                                 <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="myTat" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -198,7 +199,7 @@
                                 <div class="dropdown-menu" aria-labelledby="myTat">                                    
                                     <a href="{{url('lab/report/tat')}}" class="dropdown-item">Average TAT</a>
                                     <a href="{{url('lab/report/Patienttat')}}" class="dropdown-item">TAT Per Entry</a>
-                                    <a href="{{url('lab/report/monthlyTat')}}" class="dropdown-item">TAT Per Month</a>
+                                     <a href="{{url('lab/report/monthlyTat')}}" class="dropdown-item">TAT Per Month</a>
                                     <a href="{{url('lab/report/QuarterlyTat')}}" class="dropdown-item">TAT Per Quarter</a>
                                     <a href="{{url('lab/report/mean')}}" class="dropdown-item">TAT Analysis</a>
                                 </div>

@@ -789,6 +789,7 @@ class WagonjwaController extends Controller
         }
     }
 
+    
     public function showLab($id)
     {
         $swabber = Swabber::where('status', 'Active')
@@ -798,6 +799,30 @@ class WagonjwaController extends Controller
         return view('crs.editPatient', compact('values'));
     }
 
+    
+
+    public function getPatient(Request $request)
+    {
+        $pat_no = $request->pat_no;
+          $results = wagonjwa::addSelect(
+                [
+                    'facility' => Facility::select('facility_name')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
+                    'createdby' => User::select('surname')->whereColumn('wagonjwas.created_by', 'users.id'),
+                    'createdbyfn' => User::select('first_name')->whereColumn('wagonjwas.created_by', 'users.id'),
+                    'accessionedby' => User::select('surname')->whereColumn('wagonjwas.accessioned_by', 'users.id'),
+                    'accessionedbyfn' => User::select('first_name')->whereColumn('wagonjwas.accessioned_by', 'users.id'),
+                    'enteredby' => User::select('surname')->whereColumn('wagonjwas.entered_by', 'users.id'),
+                    'enteredbyfn' => User::select('first_name')->whereColumn('wagonjwas.entered_by', 'users.id'),
+                    'result_addedby' => User::select('surname')->whereColumn('wagonjwas.result_added_by', 'users.id'),
+                    'result_addedbyfn' => User::select('first_name')->whereColumn('wagonjwas.result_added_by', 'users.id'),
+                    'swabber' => Swabber::select('full_name')->whereColumn('wagonjwas.collected_by', 'swabbers.id'),
+                ]
+            )->where('pat_no', $pat_no)->get();
+
+
+            return response()->json($results, 200);
+       
+    }
     /**
      * Show the form for editing the specified resource.
      *

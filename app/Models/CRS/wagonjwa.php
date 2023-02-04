@@ -2,14 +2,19 @@
 
 namespace App\Models\CRS;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\CRS\Facility;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\CausesActivity;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class wagonjwa extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity,CausesActivity;
 
-    protected $fillable = ['lab_no', 'patient_id', 'Facility name', 'priority', 'test_reason',  'worksheet_no', 'test_type', 'platform', 'test_kit', 'result', 'target1', 'ct_value', 'target2', 'ct_value2', 'target3', 'ct_value3',
+    protected $fillable = ['lab_no', 'patient_id', 'pat_no','Facility name', 'priority', 'test_reason',  'worksheet_no', 'test_type', 'platform', 'test_kit', 'result', 'target1', 'ct_value', 'target2', 'ct_value2', 'target3', 'ct_value3',
         'tat',
         'results_approver_name',
         'approver_signature',
@@ -26,5 +31,27 @@ class wagonjwa extends Model
     public function facility()
     {
         return $this->belongsTo(Facility::class, 'facility_id', 'id');
+    }
+    public static function search($search)
+    {
+        return empty($search) ? static::query()
+            : static::query()
+               ->where('lab_no', 'like', '%'.$search.'%')
+               ->orWhere('patient_id', 'like', '%'.$search.'%')
+               ->orWhere('worksheet_no', 'like', '%'.$search.'%')
+               ->orWhere('surname', 'like', '%'.$search.'%')
+               ->orWhere('given_name', 'like', '%'.$search.'%')
+               ->orWhere('other_name', 'like', '%'.$search.'%');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['*'])
+        ->logFillable()
+        ->useLogName('wagonjwas')
+        ->dontLogIfAttributesChangedOnly(['updated_at'])
+        ->logOnlyDirty()
+        ->dontSubmitEmptyLogs();
     }
 }

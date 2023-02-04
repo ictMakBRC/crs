@@ -1,26 +1,30 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\CRS\ActivityTrailController;
-use App\Http\Controllers\CRS\FacilityController;
-use App\Http\Controllers\CRS\KitController;
-use App\Http\Controllers\CRS\NotificationController;
-use App\Http\Controllers\CRS\patientListController;
-use App\Http\Controllers\CRS\patientResultsController;
-use App\Http\Controllers\CRS\PlatformController;
-use App\Http\Controllers\CRS\ReportController;
-use App\Http\Controllers\CRS\SwabberController;
-use App\Http\Controllers\CRS\WagonjwaController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\RolesController;
-use App\Http\Controllers\UsersController;
-use App\Models\CRS\Facility;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\CRS\Facility;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CRS\KitController;
+use App\Http\Controllers\CRS\ReportController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Livewire\CRS\PatientRegComponent;
+use App\Http\Controllers\CRS\SwabberController;
+use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\CRS\FacilityController;
+use App\Http\Controllers\CRS\PlatformController;
+use App\Http\Controllers\CRS\WagonjwaController;
+use App\Http\Controllers\CRS\patientListController;
+use App\Http\Livewire\CovMdb\TatPropotionComponent;
+use App\Http\Controllers\CRS\NotificationController;
+use App\Http\Controllers\CRS\ActivityTrailController;
+use App\Http\Controllers\CRS\patientResultsController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\PatientRegController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,9 +33,18 @@ use Illuminate\Support\Facades\Route;
 |
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| contains the "web" middleware group. Now create something great!h
 |
 */
+
+Route::get('home', function () {
+ 
+Artisan::call('backup:run');
+  //Storage::disk('google')->put('try.txt',"Hello ked");
+  dd(Artisan::output());
+  //  return 'Done';
+
+});
 
 Route::get('/', [AuthenticatedSessionController::class, 'home'])->middleware('guest')->name('home');
 Route::group(['middleware' => ['auth', 'suspended_user']], function () {
@@ -119,18 +132,18 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
     Route::get('lab/report/moh', [ReportController::class, 'moh']);
 
     Route::get('lab/report/filter', [ReportController::class, 'filterPatients']);
+    Route::post('lab/report/filterCount', [ReportController::class, 'filterPatientsCount'])->name('PatientsCount');
     Route::post('lab/report/filter', [ReportController::class, 'filterPatientsresults']);
 
     Route::get('lab/report/Patienttat', [ReportController::class, 'AvgtatSingle']);
     Route::get('lab/report/tat', [ReportController::class, 'Avgtat']);
     Route::get('lab/report/monthlyTat', [ReportController::class, 'AvgMonthlytat']);
     Route::get('lab/report/QuarterlyTat', [ReportController::class, 'AvgQuartertat']);
-
+    Route::get('lab/report/patients', [ReportController::class, 'index']);
+    
     Route::get('lab/report/mean', [ReportController::class, 'tatMean'])->name('mean');
     Route::get('lab/report/range', [ReportController::class, 'tatRange'])->name('range');
     Route::get('lab/report/propotion', [ReportController::class, 'tatPropotion'])->name('propotion');
-
-    Route::get('lab/report/patients', [ReportController::class, 'index']);
 
     Route::post('lab/report/parentList', [ReportController::class, 'parentList']);
 
@@ -188,5 +201,10 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
     Route::resource('patients', WagonjwaController::class);
     Route::get('facilityswabbers/{id}', [SwabberController::class, 'get_swabbers'])->name('swabbers.get');
     Route::resource('swabbers', SwabberController::class);
+
+    Route::get('lab/old-pateints', PatientRegComponent::class)->name('patientReg');
+    Route::get('lab/old-tat-propotion', [PatientRegController::class, 'tatPropotion'])->name('patientRegPropotion');
+    Route::get('lab/old-tat-mean', [PatientRegController::class, 'tatMean'])->name('patientRegmean');
+    Route::get('lab/old-tat-range', [PatientRegController::class, 'tatRange'])->name('patientRegRange');
 });
 require __DIR__.'/auth.php';

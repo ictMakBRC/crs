@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\crs;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\CRS\Tat;
-use App\Models\CRS\Swabber;
+use App\Http\Controllers\Controller;
 use App\Models\CRS\Facility;
 use App\Models\CRS\Platform;
+use App\Models\CRS\Swabber;
 use App\Models\CRS\wagonjwa;
+use App\Models\User;
+use App\Models\CRS\Tat;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\CRS\WagonjwaView;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Models\CRS\CreateWagonjwaView;
 
 class ReportController extends Controller
 {
@@ -39,203 +37,6 @@ class ReportController extends Controller
         return view('crs.labReportFilterPatients', compact('facilities', 'users', 'parents', 'platforms', 'swabbers'));
     }
 
-    public function tatMean(Request $request)
-    {
-        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
-        $fileName = 'Avg Monthly TAT.csv';
-        $headrName = 'MonthCreated';
-        $year = date('Y', strtotime($request->input('date_added')));
-        $week = date('Y-M-W', strtotime($request->input('date_added')));
-        $month = date('M-Y', strtotime($request->input('date_added')));
-
-       
-        $data['meanDailyTat'] = Tat::whereNotNull('result')
-        ->when($request->group == null, function ($query) use ($request) {
-            $query->select(DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'),
-            DB::raw("DATE_FORMAT(DateCreated, '%Y-%m-%d') new_date"))
-            ->groupBy('new_date')->orderBy('new_date', 'DESC');
-        })
-        ->when($request->group == 'Weekly', function ($query) use ($request) {
-            $query->select('WeekCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
-            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
-        })
-        ->when($request->group == 'Monthly', function ($query) use ($request) {
-            $query->select('MonthCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
-            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
-        })
-        ->when($request->group == 'Yearly', function ($query) use ($request) {
-            $query->select('YearCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
-            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
-        })
-        ->get();
-
-        $data['meanData'] = Tat::whereNotNull('result')->limit(12)
-        ->when($request->group == null, function ($query) use ($request) {
-            $query->select(DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'),
-            DB::raw("DATE_FORMAT(DateCreated, '%Y-%m-%d') new_date"))
-            ->groupBy('new_date')->orderBy('new_date', 'DESC');
-        })
-        ->when($request->group == 'Weekly', function ($query) use ($request) {
-            $query->select('WeekCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
-            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
-        })
-        ->when($request->group == 'Monthly', function ($query) use ($request) {
-            $query->select('MonthCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
-            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
-        })
-        ->when($request->group == 'Yearly', function ($query) use ($request) {
-            $query->select('YearCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
-            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
-            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
-        })
-        ->get();
-
-      
-
-  
-        $data['title']=$request->group!= '' ? $request->group : 'Daily';
-    
-        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
-        return view('crs.labReportTAT', $data);
-    }
-
-    public function tatPropotion(Request $request)
-    {
-        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
-     
-        if ($request->group == null){
-        $data['propotions'] =  DB::select(DB::raw('SELECT DateCreated as new_date, 
-            count(*) as total, 
-            count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-            count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-            from tat_per_entry WHERE Result IS NOT NULL
-            GROUP BY DateCreated
-            ORDER BY DateCreated DESC LIMIT 360'));  
-        $data['ChartData'] =  DB::select(DB::raw('SELECT DateCreated as new_date, 
-            count(*) as total, 
-            count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-            count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-            from tat_per_entry WHERE Result IS NOT NULL
-            GROUP BY DateCreated
-            ORDER BY DateCreated DESC LIMIT 12'));    
-        }
-        if ($request->group == 'Weekly'){
-            $data['propotions'] =  DB::select(DB::raw('SELECT WeekCreated as new_date, 
-                count(*) as total, 
-                count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-                count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-                from tat_per_entry WHERE Result IS NOT NULL
-                GROUP BY WeekCreated
-                ORDER BY WeekCreated DESC LIMIT 360'));  
-            $data['ChartData'] =  DB::select(DB::raw('SELECT DateCreated as new_date, 
-                count(*) as total, 
-                count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-                count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-                from tat_per_entry WHERE Result IS NOT NULL
-                GROUP BY WeekCreated
-                ORDER BY WeekCreated DESC LIMIT 12'));    
-            }
-            if ($request->group == 'Monthly'){
-                $data['propotions'] =  DB::select(DB::raw('SELECT MonthCreated as new_date, 
-                    count(*) as total, 
-                    count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-                    count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-                    from tat_per_entry WHERE Result IS NOT NULL
-                    GROUP BY MonthCreated
-                    ORDER BY MonthCreated DESC LIMIT 360'));  
-                $data['ChartData'] =  DB::select(DB::raw('SELECT MonthCreated as new_date, 
-                    count(*) as total, 
-                    count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-                    count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-                    from tat_per_entry WHERE Result IS NOT NULL
-                    GROUP BY MonthCreated
-                    ORDER BY MonthCreated DESC LIMIT 12'));    
-                }
-                if ($request->group == 'Yearly'){
-                    $data['propotions'] =  DB::select(DB::raw('SELECT YearCreated as new_date, 
-                        count(*) as total, 
-                        count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-                        count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-                        from tat_per_entry WHERE Result IS NOT NULL
-                        GROUP BY YearCreated
-                        ORDER BY YearCreated DESC LIMIT 360'));  
-                    $data['ChartData'] =  DB::select(DB::raw('SELECT YearCreated as new_date, 
-                        count(*) as total, 
-                        count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
-                        count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
-                        from tat_per_entry WHERE Result IS NOT NULL
-                        GROUP BY YearCreated
-                        ORDER BY YearCreated DESC LIMIT 12'));    
-                    }
-        $data['title']=$request->group!= '' ? $request->group : 'Daily';
-    
-        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
-        return view('crs.labReportTatPropotion', $data);
-    }
-
-    public function tatRange(Request $request)
-    {
-        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
-       
-
-        $data['rangeTat'] =  Tat::whereNotNull('result')
-        ->when($request->group == null, function ($query) use ($request) {
-            $query->select('DateCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->orderBy('DateCreated', 'DESC')->groupBy('DateCreated');
-        })
-        ->when($request->group == 'Weekly', function ($query) use ($request) {
-            $query->select('WeekCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
-        })      
-        ->when($request->group == 'Monthly', function ($query) use ($request) {
-            $query->select('MonthCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
-        })
-        ->when($request->group == 'Yearly', function ($query) use ($request) {
-            $query->select('YearCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
-        })
-        ->get();
-
-        $data['rangeChartData'] = Tat::whereNotNull('result')->limit(12)
-        ->when($request->group == null, function ($query) use ($request) {
-            $query->select('DateCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->orderBy('DateCreated', 'DESC')->groupBy('DateCreated');
-        })
-        ->when($request->group == 'Weekly', function ($query) use ($request) {
-            $query->select('WeekCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
-        })      
-        ->when($request->group == 'Monthly', function ($query) use ($request) {
-            $query->select('MonthCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
-        })
-        ->when($request->group == 'Yearly', function ($query) use ($request) {
-            $query->select('YearCreated as new_date',
-            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
-            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
-        })
-        ->get();    
-        $data['title']=$request->group!= '' ? $request->group : 'Daily';
-    
-        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
-        return view('crs.labReportTatRange', $data);
-    }
-
     public function filterPatientsresults(Request $request)
     {
         $from = Carbon::parse($request->input('from'))->toDateTimeString();
@@ -253,7 +54,7 @@ class ReportController extends Controller
             $request->platform = 'all';
         }
         $Exptasks = wagonjwa::orderBy('facilities.id', 'desc')
-         ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
+         ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')        
          ->select('*', 'wagonjwas.id as wid', 'wagonjwas.surname as patientName')
          ->leftJoin('platforms', 'wagonjwas.platform', '=', 'platforms.id')
          ->leftJoin('swabbers', 'wagonjwas.collected_by', '=', 'swabbers.id')
@@ -291,6 +92,116 @@ class ReportController extends Controller
         $patients = $Exptasks;
 
         return $this->export($Exptasks, $fileName);
+
+        return view('crs.labReportPatientList', compact('patients', 'to', 'from', 'facility'));
+    }
+    public $headrName = 'Date';    
+    public function filterPatientsCount(Request $request)
+    {
+        $from = Carbon::parse($request->input('from'))->toDateTimeString();
+        $to = Carbon::parse($request->input('to'))->addHour(23)->addMinutes(59)->toDateTimeString();
+        if ($request->facility_ex != '0') {
+            $request->facility_id = 'all';
+        }
+        if ($request->entered_ex != '0') {
+            $request->entered_by = 'all';
+        }
+        if ($request->swabber_ex != '0') {
+            $request->swabber_in = 'all';
+        }
+        if ($request->platform_ex != '0') {
+            $request->platform = 'all';
+        }
+        $headrName = 'Date';
+        $Exptasks = wagonjwa::whereBetween('wagonjwas.created_at', [$from, $to])
+         ->when($request->facility_id != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.facility_id', $request->facility_id);
+         })
+         ->when($request->facility_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.facility_id', '!=', $request->facility_ex);
+         })
+         ->when($request->entered_by != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.created_by', $request->entered_by);
+         })
+         ->when($request->entered_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.created_by', '!=', $request->entered_ex);
+         })
+         ->when($request->swabber_in != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.collected_by', $request->swabber_in);
+         })
+         ->when($request->swabber_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.collected_by', '!=', $request->swabber_ex);
+         })
+         ->when($request->platform != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.platform', $request->platform);
+         })
+         ->when($request->platform_ex != '0', function ($query) use ($request) {
+             $query->where('wagonjwas.platform', '!=', $request->platform_ex);
+         })
+         ->when($request->result != 'all', function ($query) use ($request) {
+             $query->where('wagonjwas.result', $request->result);
+         })
+         ->when($request->group == 'Daily', function ($query) use ($request) {
+            $query->select(DB::raw('count(wagonjwas.id) as `data`'),
+            DB::raw("DATE_FORMAT(wagonjwas.created_at, '%Y-%m-%d') DateCreated"))
+            ->groupBy('DateCreated')->orderBy('DateCreated', 'DESC');
+            $this->headrName = 'Day';
+        })
+        ->when($request->group == 'Weekly', function ($query) use ($request) {
+            $query->select(DB::raw('count(wagonjwas.id) as `data`'),
+            DB::raw("DATE_FORMAT(wagonjwas.created_at, '%Y-%w') DateCreated"))
+            ->groupBy('DateCreated')->orderBy('DateCreated', 'DESC');
+            $this->headrName = 'Week';
+        })
+        ->when($request->group == 'Monthly', function ($query) use ($request) {
+            $query->select(DB::raw('count(wagonjwas.id) as `data`'),
+            DB::raw("DATE_FORMAT(wagonjwas.created_at, '%Y-%m') MonthCreated"),
+            DB::raw("DATE_FORMAT(wagonjwas.created_at, '%Y-%M') DateCreated"))->groupBy('DateCreated')
+            ->orderBy('MonthCreated', 'DESC');           
+            $this->headrName = 'Month';
+        })
+        ->when($request->group == 'Quarterly', function ($query) use ($request) {
+            $query->select(DB::raw('count(wagonjwas.id) as `data`'),
+            DB::raw('YEAR(wagonjwas.created_at) year, quarter(wagonjwas.created_at) DateCreated'))
+            ->groupBy('DateCreated')->groupBy('year')->orderBy('DateCreated', 'DESC');
+            $this->headrName = 'Quarter';
+        })
+        ->when($request->group == 'Yearly', function ($query) use ($request) {
+            $query->select(DB::raw('count(wagonjwas.id) as `data`'),
+            DB::raw("DATE_FORMAT(wagonjwas.created_at, '%Y') DateCreated"))
+            ->groupBy('DateCreated')->orderBy('DateCreated', 'DESC');           
+            $this->headrName = 'Year';
+        })
+        ->get();
+        $fileName = 'All '.$this->headrName. 'ly sample data.csv';
+
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$fileName",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $columns = [$this->headrName, 'Total_Samples'];
+        $callback = function () use ($Exptasks, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($Exptasks as $task) {
+                $row['DateCreated'] = $task->DateCreated;
+                $row['Total'] = $task->data;
+                
+                fputcsv($file, [
+                    $row['DateCreated'],
+                    $row['Total'],
+                  
+                ]);
+            }
+
+            fclose($file);
+        };
+        return response()->stream($callback, 200, $headers);
 
         return view('crs.labReportPatientList', compact('patients', 'to', 'from', 'facility'));
     }
@@ -823,7 +734,7 @@ class ReportController extends Controller
              'Expires' => '0',
          ];
 
-         $columns = ['PTID', 'LabNo', 'BatchNo', 'CollectionDate', 'DateRecieved', 'FacilityName', 'PatientName', 'Gender', 'PatientContact', 'Age', 'Patient District', 'Swab District', 'Swabbed By', 'Entered By', 'WorkSheet No.', 'Result', 'ResultDate', 'Passport',  'TestReason', 'Who', 'Platform_name'];
+         $columns = ['PTID', 'LabNo', 'BatchNo', 'CollectionDate', 'DateRecieved', 'FacilityName', 'PatientName', 'Gender', 'PatientContact', 'Age', 'Patient District', 'Swab District', 'Swabbed By', 'Entered By', 'WorkSheet No.', 'Result', 'ResultDate', 'Passport',  'TestReason', 'Who', 'Platform_name', 'Targets','Vaccine_Doses','Sample_Type'];
 
          $callback = function () use ($Exptasks, $columns) {
              $file = fopen('php://output', 'w');
@@ -851,7 +762,9 @@ class ReportController extends Controller
                  $row['TestReason'] = $task->test_reason;
                  $row['Who'] = $task->who_tested;
                  $row['PlatformName'] = $task->platform_name;
-
+                 $row['Targets'] = $task->target1.' '.$task->ct_value.' '.$task->target2.' '.$task->ct_value2.' '.$task->target3.' '.$task->ct_value3;
+                 $row['Doses'] = $task->vaccine_dose1.' '.$task->vaccine_dose2.' '.$task->vaccine_dose3;
+                 $row['Sampletype'] = $task->sample_type;
                  fputcsv($file, [
                      $row['PTID'],
                      $row['Lab No'],
@@ -874,6 +787,9 @@ class ReportController extends Controller
                      $row['TestReason'],
                      $row['Who'],
                      $row['PlatformName'],
+                     $row['Targets'],
+                     $row['Doses'],
+                     $row['Sampletype'],
                  ]);
              }
 
@@ -882,4 +798,203 @@ class ReportController extends Controller
 
          return response()->stream($callback, 200, $headers);
      }
+     
+     
+    public function tatMean(Request $request)
+    {
+        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+        $fileName = 'Avg Monthly TAT.csv';
+        $headrName = 'MonthCreated';
+        $year = date('Y', strtotime($request->input('date_added')));
+        $week = date('Y-M-W', strtotime($request->input('date_added')));
+        $month = date('M-Y', strtotime($request->input('date_added')));
+
+       
+        $data['meanDailyTat'] = Tat::whereNotNull('result')
+        ->when($request->group == null, function ($query) use ($request) {
+            $query->select(DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'),
+            DB::raw("DATE_FORMAT(DateCreated, '%Y-%m-%d') new_date"))
+            ->groupBy('new_date')->orderBy('new_date', 'DESC');
+        })
+        ->when($request->group == 'Weekly', function ($query) use ($request) {
+            $query->select('WeekCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
+            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
+        })
+        ->when($request->group == 'Monthly', function ($query) use ($request) {
+            $query->select('MonthCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
+            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
+        })
+        ->when($request->group == 'Yearly', function ($query) use ($request) {
+            $query->select('YearCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
+            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
+        })
+        ->get();
+
+        $data['meanData'] = Tat::whereNotNull('result')->limit(12)
+        ->when($request->group == null, function ($query) use ($request) {
+            $query->select(DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'),
+            DB::raw("DATE_FORMAT(DateCreated, '%Y-%m-%d') new_date"))
+            ->groupBy('new_date')->orderBy('new_date', 'DESC');
+        })
+        ->when($request->group == 'Weekly', function ($query) use ($request) {
+            $query->select('WeekCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
+            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
+        })
+        ->when($request->group == 'Monthly', function ($query) use ($request) {
+            $query->select('MonthCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
+            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
+        })
+        ->when($request->group == 'Yearly', function ($query) use ($request) {
+            $query->select('YearCreated as new_date',DB::raw('sum(ReceiptToResult) as `TotalPerDay`'), 
+            DB::raw('count(ReceiptToResult) as `CountPerDay`'))
+            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
+        })
+        ->get();
+
+      
+
+  
+        $data['title']=$request->group!= '' ? $request->group : 'Daily';
+    
+        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
+        return view('crs.labReportTAT', $data);
+    }
+
+    public function tatPropotion(Request $request)
+    {
+        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+     
+        if ($request->group == null){
+        $data['propotions'] =  DB::select(DB::raw('SELECT DateCreated as new_date, 
+            count(*) as total, 
+            count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+            count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+            from TAT_Per_Entry WHERE Result IS NOT NULL
+            GROUP BY DateCreated
+            ORDER BY DateCreated DESC LIMIT 360'));  
+        $data['ChartData'] =  DB::select(DB::raw('SELECT DateCreated as new_date, 
+            count(*) as total, 
+            count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+            count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+            from TAT_Per_Entry WHERE Result IS NOT NULL
+            GROUP BY DateCreated
+            ORDER BY DateCreated DESC LIMIT 12'));    
+        }
+        if ($request->group == 'Weekly'){
+            $data['propotions'] =  DB::select(DB::raw('SELECT WeekCreated as new_date, 
+                count(*) as total, 
+                count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+                count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+                from TAT_Per_Entry WHERE Result IS NOT NULL
+                GROUP BY WeekCreated
+                ORDER BY WeekCreated DESC LIMIT 360'));  
+            $data['ChartData'] =  DB::select(DB::raw('SELECT DateCreated as new_date, 
+                count(*) as total, 
+                count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+                count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+                from TAT_Per_Entry WHERE Result IS NOT NULL
+                GROUP BY WeekCreated
+                ORDER BY WeekCreated DESC LIMIT 12'));    
+            }
+            if ($request->group == 'Monthly'){
+                $data['propotions'] =  DB::select(DB::raw('SELECT MonthCreated as new_date, 
+                    count(*) as total, 
+                    count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+                    count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+                    from TAT_Per_Entry WHERE Result IS NOT NULL
+                    GROUP BY MonthCreated
+                    ORDER BY MonthCreated DESC LIMIT 360'));  
+                $data['ChartData'] =  DB::select(DB::raw('SELECT MonthCreated as new_date, 
+                    count(*) as total, 
+                    count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+                    count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+                    from TAT_Per_Entry WHERE Result IS NOT NULL
+                    GROUP BY MonthCreated
+                    ORDER BY MonthCreated DESC LIMIT 12'));    
+                }
+                if ($request->group == 'Yearly'){
+                    $data['propotions'] =  DB::select(DB::raw('SELECT YearCreated as new_date, 
+                        count(*) as total, 
+                        count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+                        count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+                        from TAT_Per_Entry WHERE Result IS NOT NULL
+                        GROUP BY YearCreated
+                        ORDER BY YearCreated DESC LIMIT 360'));  
+                    $data['ChartData'] =  DB::select(DB::raw('SELECT YearCreated as new_date, 
+                        count(*) as total, 
+                        count(if(ReceiptToResult < 1441, 11, NULL)) as totalwitin, 
+                        count(if(ReceiptToResult > 1440, 13, NULL)) as totalOut 
+                        from TAT_Per_Entry WHERE Result IS NOT NULL
+                        GROUP BY YearCreated
+                        ORDER BY YearCreated DESC LIMIT 12'));    
+                    }
+        $data['title']=$request->group!= '' ? $request->group : 'Daily';
+    
+        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
+        return view('crs.labReportTatPropotion', $data);
+    }
+
+    public function tatRange(Request $request)
+    {
+        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+       
+
+        $data['rangeTat'] =  Tat::whereNotNull('result')
+        ->when($request->group == null, function ($query) use ($request) {
+            $query->select('DateCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->orderBy('DateCreated', 'DESC')->groupBy('DateCreated');
+        })
+        ->when($request->group == 'Weekly', function ($query) use ($request) {
+            $query->select('WeekCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
+        })      
+        ->when($request->group == 'Monthly', function ($query) use ($request) {
+            $query->select('MonthCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
+        })
+        ->when($request->group == 'Yearly', function ($query) use ($request) {
+            $query->select('YearCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
+        })
+        ->get();
+
+        $data['rangeChartData'] = Tat::whereNotNull('result')->limit(12)
+        ->when($request->group == null, function ($query) use ($request) {
+            $query->select('DateCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->orderBy('DateCreated', 'DESC')->groupBy('DateCreated');
+        })
+        ->when($request->group == 'Weekly', function ($query) use ($request) {
+            $query->select('WeekCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->groupBy('WeekCreated')->orderBy('WeekCreated', 'DESC');
+        })      
+        ->when($request->group == 'Monthly', function ($query) use ($request) {
+            $query->select('MonthCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->groupBy('MonthCreated')->orderBy('MonthCreated', 'DESC');
+        })
+        ->when($request->group == 'Yearly', function ($query) use ($request) {
+            $query->select('YearCreated as new_date',
+            DB::raw('MIN(ReceiptToResult) AS MinMins, MAX(ReceiptToResult) AS MaxMins'))
+            ->groupBy('YearCreated')->orderBy('YearCreated', 'DESC');
+        })
+        ->get();    
+        $data['title']=$request->group!= '' ? $request->group : 'Daily';
+    
+        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
+        return view('crs.labReportTatRange', $data);
+    }
+
 }

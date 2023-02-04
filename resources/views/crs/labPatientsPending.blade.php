@@ -27,6 +27,7 @@
                                     <tr>
                                         <th>No.</th>
                                         <th>Lab No</th>
+                                        <th>Pat No</th>
                                         <th>Patient ID</th>
                                         <th>Passport</th>
                                         <!--<th>Priority</th>-->
@@ -49,6 +50,7 @@
        
                                         <td>{{$key+1}}</td>
                                          <td>{{$patient->lab_no?$patient->lab_no:'N/A'}}</td>
+                                        <td>{{$patient->pat_no}}</td>
                                         <td>{{$patient->patient_id}}</td>
                                         <td>{{$patient->doc_no}}</td>
                                         <!--@if ($patient->priority!='Emergency')-->

@@ -26,58 +26,7 @@
                 </div>
             </li>
             @endif
-            <!--@if (Auth::user()->hasRole(['DataAdmin','ResultsApprover','ResultsQC']))-->
-            <!-- <li class="dropdown notification-list">-->
-            <!--                        <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" id="topbar-notifydrop" role="button" aria-haspopup="true" aria-expanded="false">-->
-            <!--                            <i class="dripicons-bell noti-icon"></i>-->
-            <!--                            <h6 class="text-success"><span class="noti-icon-badge">{{$NotCount}}</span></h6>-->
-                                        
-                                        
-            <!--                        </a>-->
-            <!--                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg" aria-labelledby="topbar-notifydrop">-->
-    
-                                        <!-- item-->
-            <!--                            <div class="dropdown-item noti-title">-->
-            <!--                                <h5 class="m-0">-->
-            <!--                                    <span class="float-end">-->
-            <!--                                        <a href="javascript: void(0);" class="text-dark">-->
-            <!--                                            <small>Clear All</small>-->
-            <!--                                        </a>-->
-            <!--                                    </span>Notification-->
-            <!--                                </h5>-->
-            <!--                            </div>-->
-            <!--                    @if(count($NotItems)>0)-->
-            <!--                            <div style="max-height: 230px;" data-simplebar="">-->
-                                           
-            <!--                             @foreach($NotItems as $value)-->
-                                            <!-- item-->
-            <!--                                <a href="{{url('lab/notification/view/'.$value->nid)}}" class="dropdown-item notify-item">-->
-            <!--                                    <div class="notify-icon bg-primary">-->
-            <!--                                        <i class="mdi mdi-comment-account-outline"></i>-->
-            <!--                                    </div>-->
-            <!--                                    <p class="notify-details">{{$value->subject}}-->
-            <!--                                        <small class="text-muted">{{ $value->date}}</small>-->
-            <!--                                        <small class="text-muted">{{ $value->name}} ({{ $value->facility_name}})</small>-->
-            <!--                                    </p>-->
-            <!--                                </a>-->
-            <!--                            @endforeach-->
-                                              
-                                         
-            <!--                            </div>-->
-    
-                                        <!-- All-->
-            <!--                            <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">-->
-            <!--                                View All-->
-            <!--                            </a>-->
-            <!--                            @else-->
-            <!--                             <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">-->
-            <!--                                No new Notifications-->
-            <!--                            </a>-->
-            <!--                    @endif-->
-            <!--                        </div>-->
-            <!--   </li>-->
-
-            <!--@endif-->
+           
             <li class="dropdown notification-list">
                 <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" id="topbar-userdrop" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <span class="account-user-avatar">

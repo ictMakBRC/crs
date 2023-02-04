@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS `TAT_Per_Entry`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`crs`@`localhost` SQL SECURITY DEFINER VIEW `TAT_Per_Entry_Old`  AS SELECT `patient_reg`.`batchno` AS `batchno`, `patient_reg`.`labno` AS `LabNo`, `patient_reg`.`result` AS `Result`, date_format(`patient_reg`.`enteredby`,'%Y-%m-%d') AS `DateCreated`, date_format(`patient_reg`.`entrydate`,'%Y-%m') AS `MonthCreated`, date_format(`patient_reg`.`entrydate`,'%Y-%v') AS `WeekCreated`, date_format(`patient_reg`.`entrydate`,'%Y') AS `YearCreated`, quarter(`patient_reg`.`entrydate`) AS `Myquarter`,timestampdiff(MINUTE,`patient_reg`.`entrydate`,`patient_reg`.`resultdate`) AS `EntryToResult` FROM `patient_reg` ;

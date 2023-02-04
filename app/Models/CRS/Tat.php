@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Tat extends Model
 {
     use HasFactory;
-    protected $table="tat_per_entry";
+    protected $table="TAT_Per_Entry";
 
     public function propotioninrange()
     {

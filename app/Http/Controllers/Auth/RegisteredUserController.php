@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use Notification;
 // use App\Models\Station;
-use App\Models\ActivityLog;
-use App\Models\CRS\Facility;
-use App\Models\Department;
-use App\Models\Designation;
 use App\Models\Role;
 use App\Models\User;
-use App\Notifications\SendEmailNotification;
+use App\Models\Department;
+use App\Models\ActivityLog;
+use App\Models\Designation;
+use App\Models\CRS\Facility;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Notification;
+use Illuminate\Support\Facades\Validator;
+use App\Notifications\SendEmailNotification;
 
 class RegisteredUserController extends Controller
 {
@@ -265,5 +266,39 @@ class RegisteredUserController extends Controller
 
             return redirect()->back()->with('success', 'User Updated Successfully');
         }
+    }
+
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8'
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors());       
+        }
+
+        $user = User::create([
+
+            'surname' => 'Auto',
+            'first_name' => 'Lab',
+            'other_name' => 'API',
+            'name' => 'Auto Lab',
+            'email' => 'autolab@crs.co.ug',
+            'password' => Hash::make('autolab@2023'),
+            'title' => 'Mr',
+            'contact' => '073373737',
+            'facility_id' => '26',
+            'department_id' => '2',
+            'designation_id' => '4',
+            'is_active' => '1',
+         ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()
+            ->json(['data' => $user,'access_token' => $token, 'token_type' => 'Bearer', ]);
     }
 }

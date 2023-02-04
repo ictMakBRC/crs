@@ -12,6 +12,7 @@
                                 <tr>
                                     <th>No.</th>
                                     <th>Lab No</th>
+                                    <th>Pat No</th>
                                     <th>Patient id</th>
                                     <th>Passport</th>
                                     <th>Names</th>
@@ -27,6 +28,7 @@
                                 <tr>
                                     <td>{{$key+1}}</td>
                                     <td>{{$patient->lab_no}}</td>
+                                    <td>{{$patient->pat_no}}</td>
                                     <td>{{$patient->patient_id}}</td>
                                     <td>{{$patient->doc_no}}</td>
                                     <td>{{$patient->surname.' '.$patient->given_name.' '.$patient->other_name}}</td>
