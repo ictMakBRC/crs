@@ -1,5 +1,5 @@
 <x-crs-layout>
-    @section('title', 'Patients list')
+    @section('title', 'Results TAT propotions')
 
 
     <!-- end row-->
@@ -19,8 +19,9 @@
                                     <th>Date ({{$title}})</th>
                                     <th>Inside Rage</th>
                                     <th>Outside Rage</th>
-                                    <th>Total</th>
-                                    <th>Propotion(%)</th>
+                                    <th>Total Samples</th>
+                                    <th>within TAT(%)</th>
+                                    <th>Outside TAT(%)</th>
                             </tr>
                         <thead>
                             <tbody>
@@ -37,6 +38,12 @@
                                     @endphp
                                     @convert($propValue)
                                     </td>
+                                    <td>
+                                        @php
+                                            $propValue2 = ($data->totalOut/$data->total)*100
+                                        @endphp
+                                        @convert($propValue2)
+                                        </td>
                                     
                                 </tr>
                                 @endforeach
@@ -55,7 +62,8 @@
            
             </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="{{url('assets/js/vendor/Chart.bundle.min.js')}}"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script> --}}
     <script>
         var ctx = document.getElementById('canvas').getContext('2d');
        var myChart = new Chart(ctx, {
@@ -70,9 +78,21 @@
                 @endphp
                 @convert($propValue),
              @endforeach],
-                 label: "Percentage Propotion",
+                 label: "% Propotion inside range",
                  borderColor: "rgb(60,186,159)",
-                 backgroundColor: "rgb(60,186,159,0.6)",
+                 backgroundColor: "rgb(60,186,159,0.2)",
+               },
+               { 
+                 data: [ 
+                    @foreach ($ChartData as $data)   
+                 @php
+                    $propValue = ($data->totalOut/$data->total)*100
+                @endphp
+                @convert($propValue),
+             @endforeach],
+                 label: "% Propotion Outiside range",
+                 borderColor: "rgb(60,186,159)",
+                 backgroundColor: "rgb(255, 99, 132, 0.2)",
                }
              ]
            },
