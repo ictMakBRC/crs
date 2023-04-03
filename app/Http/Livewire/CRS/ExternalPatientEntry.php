@@ -52,7 +52,7 @@ class ExternalPatientEntry extends Component
         if($patient && $patient['caseID']!='' && $patNumber==null){
             DB::transaction(function () use($patient,$pat_no){
                 // dd($patient);
-                $wago
+                
                 wagonjwa::create([
                     'pat_no'=>$pat_no,
                     'patient_id'=>$patient['caseID'],
