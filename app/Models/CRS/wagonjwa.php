@@ -29,6 +29,7 @@ class wagonjwa extends Model
         'collection_date',
         'collected_by',
         'sample_type',
+        'sample_id',
         'entry_type',
         'facility_id',
         'lab_no', 
