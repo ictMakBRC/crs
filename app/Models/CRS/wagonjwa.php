@@ -13,8 +13,41 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class wagonjwa extends Model
 {
     use HasFactory,LogsActivity,CausesActivity;
-
-    protected $fillable = ['lab_no', 'patient_id', 'pat_no','Facility name', 'priority', 'test_reason',  'worksheet_no', 'test_type', 'platform', 'test_kit', 'result', 'target1', 'ct_value', 'target2', 'ct_value2', 'target3', 'ct_value3',
+ 
+    protected $fillable = [
+        'surname',
+        'given_name',
+        'priority',
+        'who_tested',
+        'test_reason',
+        'gender',
+        'age',
+        'phone_number',
+        'nationality',
+        'patient_district',
+        'swab_district',
+        'collection_date',
+        'collected_by',
+        'sample_type',
+        'entry_type',
+        'facility_id',
+        'lab_no', 
+        'patient_id',
+        'pat_no',
+        'Facility name', 
+        'priority', 
+        'test_reason',  
+        'worksheet_no', 
+        'test_type', 
+        'platform', 
+        'test_kit', 
+        'result', 
+        'target1', 
+        'ct_value', 
+        'target2', 
+        'ct_value2', 
+        'target3', 
+        'ct_value3',
         'tat',
         'results_approver_name',
         'approver_signature',
@@ -54,4 +87,5 @@ class wagonjwa extends Model
         ->logOnlyDirty()
         ->dontSubmitEmptyLogs();
     }
+
 }

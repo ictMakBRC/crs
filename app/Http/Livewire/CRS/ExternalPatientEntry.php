@@ -38,19 +38,22 @@ class ExternalPatientEntry extends Component
     public function claimPatient($caseId)
     {
         $patient=$this->external_patients->where('caseID',$caseId)->first();
+        $patNumber = Wagonjwa::where('patient_id',$patient['caseID'])->value('patient_id');
         $latestPatNo = Wagonjwa::select('pat_no')->whereNotNull('pat_no')->orderBy('id', 'desc')->first();
+        //$count=Wagonjwa::count();
         if ($latestPatNo) {
             $pat_no = 'BRC-'.(substr(explode('-', $latestPatNo->pat_no)[1], 0, -1) + 1).'P';
         } else {
             $pat_no = 'BRC-10000P';
         }
 
-        if($patient){
+        // dd($patient);
+
+        if($patient && $patient['caseID']!='' && $patNumber==null){
             DB::transaction(function () use($patient,$pat_no){
-                wagonjwa::updateOrCreate([
-                    'patient_id'=>$patient['caseID'],
-    
-                ],[
+                // dd($patient);
+                $wago
+                wagonjwa::create([
                     'pat_no'=>$pat_no,
                     'patient_id'=>$patient['caseID'],
                     'surname' => $patient['patient_surname'],
@@ -70,15 +73,17 @@ class ExternalPatientEntry extends Component
                     'entry_type' => 'RDS',
                     'facility_id'=>70
                 ]);
+                $pat_no=null;
+                $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Patient claimed and created successfully']);
             });
-
-            dd('success');
+            // dd('success');
         }else{
-                    // $this->dispatchBrowserEvent('swal:modal', [
-        //     'type' => 'warning',
-        //     'message' => 'Not Found!',
-        //     'text' => 'Oops! No Trainers selected for export!',
-        // ]);
+            $pat_no=null;
+            $this->dispatchBrowserEvent('swal:modal', [
+                'type' => 'error',
+                'message' => 'Error',
+                'text' => 'Something went wrong!',
+            ]);
         }
        
     }

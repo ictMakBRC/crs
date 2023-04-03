@@ -26,7 +26,7 @@
                         <td>{{ $patient['request_date'] ?? '-' }}</td>
                         <td>{{ $patient['swabing_district'] ?? '-' }}</td>
                         <td class="table-action">
-                            <button type="button" class="btn btn-success" wire:click="claimPatient('{{$patient['caseID']}}')">Claim</button>
+                            <button type="button" class="btn btn-success" wire:click="claimPatient('{{$patient['caseID']}}')"><i class="dripicons-arrow-down"></i></button>
                         </td>
                     </tr>
                 @endforeach
