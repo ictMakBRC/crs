@@ -445,7 +445,7 @@ class WagonjwaController extends Controller
             ->select('*', 'wagonjwas.id as wid')
             ->whereMonth('wagonjwas.created_at', '=', $today)
             ->whereYear('wagonjwas.created_at', date('Y'))
-            ->paginate(99500);
+            ->paginate(1500);
 
             return view('crs.labPatientList', compact('patients'));
         } else {
@@ -460,9 +460,10 @@ class WagonjwaController extends Controller
             $patients = wagonjwa::orderBy('lab_no', 'desc')
             ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
             ->select('*', 'wagonjwas.id as wid', 'wagonjwas.created_at as created')
+            // ->whereBetween('wagonjwas.created_at', ['2023-02-24 23:59:00', '2023-02-26 00:01:00'])
             ->whereMonth('wagonjwas.created_at', '=', Carbon::now()->subMonth()->month)
             //->whereYear('wagonjwas.created_at', date('Y'))
-            ->paginate(99500);
+            ->paginate(1000);
 
             return view('crs.labPatientList', compact('patients'));
         } else {
@@ -477,7 +478,7 @@ class WagonjwaController extends Controller
             ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
             ->select('*', 'wagonjwas.id as wid')
             ->whereBetween('wagonjwas.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->paginate(99500);
+            ->paginate(1500);
 
             return view('crs.labPatientList', compact('patients'));
         } else {
@@ -804,6 +805,8 @@ class WagonjwaController extends Controller
     public function getPatient(Request $request)
     {
         $pat_no = $request->pat_no;
+        $token = $request->token;
+        if($token == 'ASHS773HD8883HDXHDHY'){
           $results = wagonjwa::addSelect(
                 [
                     'facility' => Facility::select('facility_name')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
@@ -821,6 +824,12 @@ class WagonjwaController extends Controller
 
 
             return response()->json($results, 200);
+            
+        }else{
+         
+                 return response()->json(4001);
+      
+        }
        
     }
     /**

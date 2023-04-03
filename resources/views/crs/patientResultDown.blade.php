@@ -11,7 +11,7 @@
   hr:not([size]){height:1px}
       .text_centered {
         position: absolute;
-        top: 58%;
+        top: 54%;
         left: 6%;
         /* transform: translate(-50%, -50%); */
         color: red
@@ -28,10 +28,26 @@
   padding-bottom: 5px;
   border-block-start-style: outset;
 }
+  a:link {
+        text-decoration: none;
+        color: #44a847;
+        }
+
+        a:visited {
+        text-decoration: none;
+        }
+
+        a:hover {
+        text-decoration: underline;
+        }
+
+        a:active {
+        text-decoration: underline;
+        }
 </style>
 </head>
 
-<body style="line-height:1.2">
+<body style="line-height:1">
     @if(count($results)>0)
     @foreach($results as $result)
     <div class="row" style="line-height:0.9">
@@ -40,7 +56,7 @@
           <h3 style="text-align:center; font-family:times;">MAKERERE UNIVERSITY COLLEGE OF HEALTH SCIENCES</h3>
            <h4 style="text-align:center; font-family:times;">SCHOOL OF BIOMEDICAL SCIENCES<br>
            DEPARTMENT OF IMMUNOLOGY AND MOLECULAR BIOLOGY</h4>
-          <h5 style="text-align:center; font-family:times;">MOLECULAR BIOLOGY LABORATORY</h5>
+          <h4 style="text-align:center; font-family:times;">Molecular Biology Laboratory</h4>
           <h6 style="text-align:center; font-family:times; color:red"><b>COVID-19 TEST RESULT</b></h6>
           <hr style="height:1px; width:100%; color:#6C757D;">
     </div>
@@ -97,7 +113,7 @@
           </tr>
           <tr class="btop">
               <td class="btop">
-                <h3>Result</h3>
+                <h3>Stamp</h3>
                   <img width="150px" src="{{asset('images/results/stamp.png')}}" alt="">
                   <div class="text_centered"><h4>{{date('d M Y')}}</h4></div>
 
@@ -124,21 +140,21 @@
             </td>
           </tr>
 
-          <tr>
+        <tr>
             <td class="btop">
-                <img width="120px" src="{{asset('images/results/done_by.png')}}" alt="">
+                <img  width="7%" src="{{asset('images/results/kml.png')}}" alt="">
                 <br>
-                  <strong>Performed By: </strong> [N.A.F]
+                  <strong>Performed By: </strong> [K.L.M]
                 </td>
             <td class="btop">
-                <img width="120px" src="{{asset('images/results/reviewed_by.png')}}" alt="">
+                <img width="80px" src="{{asset('images/results/katabalwa.png')}}" alt="">
                   <br>
-                  <strong>Reviewed By: </strong> [K.A.F]
+                  <strong>Reviewed By: </strong> [K.A.J]
                 </td>
             <td class="btop"> 
-                <img width="120px" src="{{asset('images/results/lab_manager.png')}}" alt="">
+                <img width="80px" src="{{asset('images/results/kigozi.png')}}" alt="">
               <br>
-                  <strong>Lab Manager: </strong> [K.E.G]
+                  <strong>Approved By: </strong> [K.E.G]
             </td>
          </tr>
 
@@ -159,9 +175,9 @@
 
           </tbody>
         </table>
-            <footer>
-                <table width="100%">
-                    <tr>
+         <footer>
+             <table>
+                  <tr>
                         <td colspan="2" style="width: 80%; text-alighn:center">
                             <h6 style="color:green;  ">
                                 The Laboratory is Certified by the Ministry of Health Uganda to test for COVID-19
@@ -171,19 +187,39 @@
                             <img width="15%" style="margin-right:18px;" src="{{asset('images/results/covid19.png')}}" alt="COVID-19" >
                         </td>
                     </tr>
-                    <tr>
-                        <td> <p style="text-align:center; font-size:10px; color:#4CAF50">Printed By: <font>{{ Auth::user()->name }} </font></p></td>
-                        <td> <p style="text-align:center; font-size:10px; color:#4CAF50"> Print Date: {{date('l d-M-Y H:i:s')}}</font></p></td>
-                        <td> <p style="text-align:center; font-size:10px; color:#4CAF50"> Printed {{$result->print_count}} time(s)</font></p></td>
-                    </tr>
-                </table>
-                {{-- <table style="border-bottom: 0.2px solid #6C757D; width: 100%">
-                  <tr>
-                    <td  style="color:#6C757D">  Page <span class="page">1</span> of <span class="topage">1</span></td>
-                  
-                  </tr>
-                </table> --}}
-            </footer>
+             </table>
+            <table width="100%" style=" position: fixed; bottom: 0; text-align:center; font-size:10px; color:#4CAF50">
+            
+                
+                <tr>
+                    <td>
+                        <p>
+                        
+                          <strong>GMI LABS;</strong> Tel: <a href="tel:+256 0414674494">0414674494</a> |
+                   
+                          Website: <a style="color: #44a847" href="https://gmi.mak.ac.ug">www.gmi.mak.ac.ug</a> |
+                    
+                          Email: <a href="mailto:makbrc.chs@mak.ac.ug">makbrc.chs@mak.ac.ug</a>
+                      </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="text-align:center; font-style: italic; font-size:8px; color:#4CAF50 ; bottom: 0;  right: 0;        
+                        position: fixed;">Printed By: <font>
+                                {{ Auth::user()->name }} </font> |
+                        Print Date:
+                            {{ date('l d-M-Y H:i:s') }}</font> |
+                        Printed
+                            {{$result->print_count}} time(s)
+                           
+                        </p>
+                    </td>
+                </tr>
+            </table>
+             
+        </footer>
+           
 
 
 

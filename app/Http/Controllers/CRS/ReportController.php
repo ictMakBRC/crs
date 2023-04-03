@@ -615,7 +615,7 @@ class ReportController extends Controller
             'Expires' => '0',
         ];
 
-        $columns = ['PTID', 'LabNo', 'BatchNo', 'CollectionDate', 'DateRecieved', 'FacilityName', 'PatientName', 'Gender', 'PatientContact', 'Age', 'Patient District', 'Swab District', 'WorkSheet No.', 'Result', 'ResultDate', 'Passport',  'TestReason', 'Who', 'VaccineType'];
+        $columns = ['PTID', 'LabNo', 'BatchNo', 'CollectionDate', 'DateRecieved', 'FacilityName', 'PatientName', 'Gender', 'PatientContact', 'Age', 'Nationality', 'Patient District', 'Swab District', 'WorkSheet No.', 'Result', 'ResultDate', 'Passport',  'TestReason', 'Who', 'VaccineType', 'Sample Type'];
 
         $callback = function () use ($Exptasks, $columns) {
             $file = fopen('php://output', 'w');
@@ -632,6 +632,7 @@ class ReportController extends Controller
                 $row['Gender'] = $task->gender;
                 $row['Contact'] = $task->phone_number;
                 $row['Age'] = $task->age;
+                $row['Nationality'] = $task->nationality;
                 $row['Patient District'] = $task->patient_district;
                 $row['Swab District'] = $task->swab_district;
                 $row['Worksheet No.'] = $task->worksheet_no;
@@ -641,6 +642,7 @@ class ReportController extends Controller
                 $row['TestReason'] = $task->test_reason;
                 $row['Who'] = $task->who_tested;
                 $row['vaccinetype'] = $task->vaccine_dose1;
+                $row['SampleType'] = $task->sample_type;
 
                 fputcsv($file, [
                     $row['PTID'],
@@ -653,6 +655,7 @@ class ReportController extends Controller
                     $row['Gender'],
                     $row['Contact'],
                     $row['Age'],
+                    $row['Nationality'],
                     $row['Patient District'],
                     $row['Swab District'],
                     $row['Worksheet No.'],
@@ -662,6 +665,7 @@ class ReportController extends Controller
                     $row['TestReason'],
                     $row['Who'],
                     $row['vaccinetype'],
+                    $row['SampleType'],
                 ]);
             }
 

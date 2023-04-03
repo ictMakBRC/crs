@@ -16,6 +16,6 @@ use App\Http\Controllers\CRS\WagonjwaController;
 */
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('get-patient', [WagonjwaController::class, 'getPatient']);
+    Route::get('getpatient', [WagonjwaController::class, 'getPatient']);
 });
-Route::get('getpatient', [WagonjwaController::class, 'getPatient']);
+Route::get('get-patient', [WagonjwaController::class, 'getPatient']);
