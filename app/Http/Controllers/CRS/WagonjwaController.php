@@ -590,7 +590,20 @@ class WagonjwaController extends Controller
             $swabber = Swabber::where('status', 'Active')
             ->orderBy('full_name', 'asc')->get();
             $facilities = Facility::orderBy('facility_name', 'asc')->get();
+        // $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/covid_suspects', 'verify' => false]);
+        // try {
+        //     $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects',[
+        //         'auth' => [
+        //             'uvri_lims', '4B>{jaE54^_azqR['
+        //         ]
+        //     ]);
 
+        //     $data = collect(json_decode($res->getBody(), true));
+        //     $external_patients=$data;
+        // } catch (\GuzzleHttp\Exception\RequestException $e) {
+
+        //     $external_patients = collect([]);
+        // }
             return view('crs.LabNewPatient', compact('facilities', 'swabber'));
         } else {
             abort(Response::HTTP_FORBIDDEN, '403 Forbidden');

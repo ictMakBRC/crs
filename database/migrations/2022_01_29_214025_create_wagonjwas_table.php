@@ -15,6 +15,7 @@ class CreateWagonjwasTable extends Migration
     {
         Schema::create('wagonjwas', function (Blueprint $table) {
             $table->id();
+            $table->string('pat_no')->unique();
             $table->string('patient_id')->unique();
             $table->string('surname')->nullable();
             $table->string('given_name')->nullable();
