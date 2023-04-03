@@ -135,6 +135,7 @@
                                                             <option selected value="{{$facility->facility_type}}">{{$facility->facility_type}}</option>
                                                             <option value='Institution'>Institution</option>
                                                             <option value='Health Facility'>Health Facility</option>
+                                                            <option value='API'>API</option>
                                                             
                                                         </select>
                                                     </div>
