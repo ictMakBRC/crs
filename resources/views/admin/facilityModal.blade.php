@@ -33,7 +33,7 @@
                                 <option selected value="">Select Type</option>
                                 <option value='Institution'>Institution</option>
                                 <option value='Health Facility'>Health Facility</option>
-                                
+                                <option value='API'>API</option>
                             </select>
                         </div>
                         <div class="mb-3 col-md-6">

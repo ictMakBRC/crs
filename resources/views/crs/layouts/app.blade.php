@@ -18,7 +18,7 @@
         <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css">
         <link href="{{asset('assets/css/app.min.css')}}" rel="stylesheet" type="text/css" id="light-style">
         <link href="{{asset('assets/css/app-dark.min.css')}}" rel="stylesheet" type="text/css" id="dark-style">
-        {{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.4.2/dist/alpine.js"></script> --}}
+        <link href="{{ asset('assets/css/izitoast/css/iziToast.min.css') }}" rel="stylesheet" type="text/css">
         @livewireStyles
     </head>
 
@@ -127,6 +127,68 @@
           });
         });
       </script>
+     <script src="{{ asset('assets/js/izitoast/js/iziToast.min.js') }}"></script>    
+     <script src="{{ asset('assets/js/sweetalert/sweetalert.min.js') }}"></script>
+    <script>
+      window.addEventListener('alert', event => {
+
+          if (event.detail.type == 'success') {
+              iziToast.success({
+                  title: 'Success!',
+                  message: `${event.detail.message}`,
+                  timeout: 5000,
+                  position: 'topRight'
+              });
+          }
+
+          if (event.detail.type == 'Error') {
+              iziToast.error({
+                  title: 'Error!',
+                  message: `${event.detail.message}`,
+                  timeout: 5000,
+                  position: 'topRight'
+              });
+          }
+
+          if (event.detail.type == 'warning') {
+              iziToast.warning({
+                  title: 'Warning!',
+                  message: `${event.detail.message}`,
+                  timeout: 5000,
+                  position: 'topRight'
+              });
+          }
+      });
+
+      window.addEventListener('switch-theme', event => {
+          $("html").attr("class", `${event.detail.theme}`)
+      });
+
+      window.addEventListener('swal:modal', event => {
+          swal({
+              title: event.detail.message,
+              text: event.detail.text,
+              icon: event.detail.type,
+          });
+      });
+
+      window.addEventListener('swal:confirm', event => {
+          swal({
+                  title: event.detail.message,
+                  text: event.detail.text,
+                  icon: event.detail.type,
+                  buttons: true,
+                  dangerMode: true,
+              })
+              .then((willDelete) => {
+                  if (willDelete) {
+                      window.livewire.emit('remove');
+                  } else {
+                      window.livewire.emit('cancel');
+                  }
+              });
+      });
+    </script>
       @stack('scripts')
     </body>
 </html>
