@@ -1443,9 +1443,9 @@ class WagonjwaController extends Controller
         });
 
         // return $patient;
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/rds_sync', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://limsapi.cphluganda.org/rds_sync', 'verify' => false]);
         try {
-            $res = $client->request('POST', 'https://apitest.cphluganda.org/rds_sync', [
+            $res = $client->request('POST', 'https://limsapi.cphluganda.org/rds_sync', [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($patient[0]),
             ]);
