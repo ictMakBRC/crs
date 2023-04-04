@@ -13,25 +13,20 @@ class ExternalPatientEntry extends Component
 
     public function mount()
     {
-        
-            // return $patient;
-            $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/covid_suspects', 'verify' => false]);
-            try {
-                $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects',[
-                    'auth' => [
-                        'uvri_lims', '4B>{jaE54^_azqR['
-                    ]
-                ]);
-    
-                $data = collect(json_decode($res->getBody(), true));
-                // dd($data);
-                $this->external_patients=$data;
-                // return response()->json($external_patients);
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
-    
-                // dd($e->getMessage());
-                $this->external_patients = collect([]);
-            }
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/covid_suspects', 'verify' => false]);
+        try {
+            $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects',[
+                'auth' => [
+                    'uvri_lims', '4B>{jaE54^_azqR['
+                ]
+            ]);
+
+            $data = collect(json_decode($res->getBody(), true));
+            $this->external_patients=$data;
+            
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $this->external_patients = collect([]);
+        }
 
     }
 
@@ -47,7 +42,7 @@ class ExternalPatientEntry extends Component
             $pat_no = 'BRC-10000P';
         }
 
-        // dd($patient);
+        // dd($patNumber);
 
         if($patient && $patient['caseID']!='' && $patNumber==null){
             DB::transaction(function () use($patient,$pat_no){
@@ -73,12 +68,12 @@ class ExternalPatientEntry extends Component
                     'entry_type' => 'RDS',
                     'facility_id'=>70
                 ]);
-                $pat_no=null;
+                $pat_no='';
                 $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Patient claimed and created successfully']);
             });
             // dd('success');
         }else{
-            $pat_no=null;
+            $pat_no='';
             $this->dispatchBrowserEvent('swal:modal', [
                 'type' => 'error',
                 'message' => 'Error',

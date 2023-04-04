@@ -1,5 +1,5 @@
 <div>
-    <div class="table-responsive">
+    <div class="table-responsive" wire:ignore>
         <table id="datableButtons" class="table">
             <thead>
                 <tr>
