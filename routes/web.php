@@ -190,6 +190,7 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
 
     Route::get('wagonjwa/export', [WagonjwaController::class, 'export'])->name('wagonjwa.export');
     Route::get('mugonjwa/{id}', [WagonjwaController::class, 'send_to_rds'])->name('send.rds');
+    Route::get('mugonjwa/update/{id}', [WagonjwaController::class, 'update_rds'])->name('update.rds');
     Route::get('patients/lab/new_patient', [WagonjwaController::class, 'createLab']);
     Route::get('patients/lab/edit/{id}', [WagonjwaController::class, 'editLab']);
     Route::get('patients/view/{id}', [WagonjwaController::class, 'showpatient']);

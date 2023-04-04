@@ -1443,9 +1443,123 @@ class WagonjwaController extends Controller
         });
 
         // return $patient;
-        $client = new Client(['base_uri' => 'https://limsapi.cphluganda.org/rds_sync', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/rds_sync', 'verify' => false]);
         try {
-            $res = $client->request('POST', 'https://limsapi.cphluganda.org/rds_sync', [
+            $res = $client->request('POST', 'https://apitest.cphluganda.org/rds_sync', [
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => json_encode($patient[0]),
+            ]);
+
+            $mugonjwa->rds_success = $res->getStatusCode();
+            $mugonjwa->rds_failure = null;
+            $mugonjwa->update();
+
+            return redirect()->back()->with('success', $res->getBody()->getContents());
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            if ($mugonjwa->rds_success != '201') {
+                $mugonjwa->rds_failure = $e->getCode();
+                $mugonjwa->update();
+            }
+
+            return redirect()->back()->with('error', $e->getResponse()->getBody()->getContents());
+        }
+    }
+
+
+    public function update_rds($id)
+    {
+        $data = wagonjwa::addSelect(
+            [
+                'collection_site' => Facility::select('facility_name')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
+                'facility_type' => Facility::select('facility_type')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
+                'requester_name' => Facility::select('requester_name')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
+                'requester_contact' => Facility::select('requester_contact')->whereColumn('wagonjwas.facility_id', 'facilities.id'),
+                'collectedby' => Swabber::select('full_name')->whereColumn('wagonjwas.collected_by', 'swabbers.id'),
+                'performedby' => User::select('name')->whereColumn('wagonjwas.result_added_by', 'users.id'),
+                'platform' => Platform::select('platform_name')->whereColumn('wagonjwas.platform', 'platforms.id'),
+                'platform_range' => Platform::select('platform_range')->whereColumn('wagonjwas.platform', 'platforms.id'),
+                'kit' => Kit::select('kit_name')->whereColumn('wagonjwas.test_kit', 'kits.id'),
+
+            ]
+        )->where(['id' => $id, 'status' => 'Completed'])
+        //->whereNull('rds_success')
+        ->get();
+
+        $mugonjwa = wagonjwa::findOrFail($id);
+        $doseCount = '';
+        $ct_value = '';
+        //return $mugonjwa;
+
+        $patient = $data->map(function ($result) {
+            if ($result->vaccine_dose1 == null && $result->vaccine_dose2 == null && $result->vaccine_dose3 == null) {
+                $doseCount = 0;
+            } elseif ($result->vaccine_dose1 && $result->vaccine_dose2 == null && $result->vaccine_dose3 == null) {
+                $doseCount = 1;
+            } elseif ($result->vaccine_dose1 && $result->vaccine_dose2 && $result->vaccine_dose3 == null) {
+                $doseCount = 2;
+            } elseif ($result->vaccine_dose1 && $result->vaccine_dose3 && $result->vaccine_dose2 == null) {
+                $doseCount = 2;
+            } elseif ($result->vaccine_dose1 && $result->vaccine_dose2 && $result->vaccine_dose3) {
+                $doseCount = 3;
+            } else {
+                $doseCount = 0;
+            }
+            $ct_value = $result->target1.'=0.000';
+            $confirmatory_value = $result->ct_value > 0 && $result->ct_value < 38 ? '='.$result->ct_value : '=0.000';
+
+            if ($result->target1 != null && $result->target2 != null && $result->target3 != null && $result->target4 != null &&
+            $result->ct_value != null && $result->ct_value2 != null && $result->ct_value3 != null && $result->ct_value4 != null) {
+                $ct_value = $result->target1.$confirmatory_value.' '.$result->target2.'='.$result->ct_value2.' '.$result->target3.'='.$result->ct_value3.' '.$result->target4.'='.$result->ct_value4;
+            } elseif ($result->target1 != null && $result->target2 != null && $result->target3 != null && $result->target4 == null &&
+            $result->ct_value != null && $result->ct_value2 != null && $result->ct_value3 != null && $result->ct_value4 == null) {
+                $ct_value = $result->target1.$confirmatory_value.' '.$result->target2.'='.$result->ct_value2.' '.$result->target3.'='.$result->ct_value3;
+            } elseif ($result->target1 != null && $result->target2 != null && $result->target3 == null && $result->target4 == null && $result->ct_value != null && $result->ct_value2 != null && $result->ct_value3 == null && $result->ct_value4 == null) {
+                $ct_value = $result->target1.$confirmatory_value.' '.$result->target2.'='.$result->ct_value2;
+            } elseif (
+                $result->target1 != null && $result->target2 == null && $result->target3 == null && $result->target4 == null &&
+                $result->ct_value != null && $result->ct_value2 == null && $result->ct_value3 == null && $result->ct_value4 == null) {
+                $ct_value = $result->target1.$confirmatory_value;
+            } else {
+                if ($result->result == 'Negative') {
+                    $ct_value = $result->target1.'=0.000';
+                }
+            }
+            // if($result->result=='Negative'){
+            //     $ct_value="0.000";
+            // }
+
+            return [
+                'token' => 'aYo423aVqXhKnG2QI6fcsPLyBmB0ONSLlOcWTkY8Jm9BEgA10y0AtiM',
+                'result' => [
+                    [
+
+                        'specimen_uuid'=>$result->sample_id,
+                        'lis_id'=>"eyJpdiI6Im1Ca3ljNjFDVW5ISU1qNCtmd0M2elE9PSIsInZhbHVlIjoiK2ZHNFB5V3ordTZpM21yMlNaVHcwZz09IiwibWFjIjoiOTRmMDg1NzhkZjQxMWQ1ZTM4NTE1MWI0ZmM4YTliYjk2MmE2M2Q4NzA5MmJiNGM2M2M2MzM2M2NmMmVmM2JhZCJ9",
+                        'eac_lab_id'=>"eyJpdiI6IlYzUzNNcVpWc2RHQzQ5XC90aDNUM25RPT0iLCJ2YWx1ZSI6IlJSZUJwZmxZZWRRTzVcL2tMM2hiUGV3PT0iLCJtYWMiOiJkMzhkNTQ1ZDEyZTYxNzA2ZDU4NGZhMmU2ZDA3NWZjZjYwOTc4N2ZhNzYyYWZmOTk0Y2UzYzFjN2QyMmNjNGU4In0=",
+
+                        // 'lis_id' => 'eyJpdiI6IlZxbXBoN3BWSFBUTjdXaW1QeE83NHc9PSIsInZhbHVlIjoiYmd3S3FkQ2MxTGIrUWExSnJsbXc2dz09IiwibWFjIjoiYjk2MDRjNjU4MDIxMmJlY2U2OGM4ZGVlODhmZjNkOTQ2NDU4NGJlNjk4OGE2NGI5OTI4ZDdlZWYxODExMjdhMyJ9',
+                        // 'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
+
+                        'specimen_lab_id'=> $result->pat_no != '' ? $result->pat_no : null,
+                        'ct_value' => $ct_value,
+                        'result' => $result->result != '' ? $result->result : null,
+                        'test_date' => $result->result_added_at != '' ? $result->result_added_at : null,
+                        'platform_range' => $result->platform_range != '' ? $result->platform_range : null,
+                        'testing_platform' =>  $result->platform != '' ? $result->platform : null,
+                        'test_method' => $result->test_type != '' ? $result->test_type : null,
+                        'tested_by' =>  $result->performedby != '' ? $result->performedby : null,
+                        'uploaded_by'  => 'Makerere University College of Health Sciences',
+
+                    ], ],
+
+            ];
+        });
+
+        // return $patient[0];
+        // return $patient;
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/sync/results', 'verify' => false]);
+        try {
+            $res = $client->request('POST', 'https://apitest.cphluganda.org/sync/results', [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($patient[0]),
             ]);

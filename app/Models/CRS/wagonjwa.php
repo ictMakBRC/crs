@@ -60,6 +60,9 @@ class wagonjwa extends Model
         'status',
         'print_count',
         'import_batch',
+        'created_by',
+        'ever_been_vaccinated',
+        'ever_been_positive',
     ];
 
     public function facility()

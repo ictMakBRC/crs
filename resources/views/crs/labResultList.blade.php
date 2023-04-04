@@ -47,7 +47,12 @@
                                     <td>{{$patient->result_added_at}}</td>
                                     <td class="table-action">
                                         <a href="{{url('patients/view/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-eye"></i></a>
-                                        <a href="{{route('send.rds',$patient->wid)}}" disabled class="action-icon {{$sub}}"> <i class="uil-plane-departure text-success"></i></a>
+                                        @if ($patient->entry_type =='RDS')
+                                            <a href="{{route('update.rds',$patient->wid)}}" disabled class="action-icon {{$sub}}"> <i class="uil-plane-departure text-success"></i></a>
+                                        @else
+                                            <a href="{{route('send.rds',$patient->wid)}}" disabled class="action-icon {{$sub}}"> <i class="uil-plane-departure text-success"></i></a>
+                                        @endif
+                                        
                                         <a target="_blanck" href="{{url('patients/result/print/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-printer"></i></a>
                                         <a  href="{{url('patients/result/download/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-download"></i></a>
                                     </td>

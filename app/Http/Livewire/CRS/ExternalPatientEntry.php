@@ -30,10 +30,12 @@ class ExternalPatientEntry extends Component
 
     }
 
-    public function claimPatient($caseId)
+  
+
+    public function claimPatient($patient_identifier)
     {
-        $patient=$this->external_patients->where('caseID',$caseId)->first();
-        $patNumber = Wagonjwa::where('patient_id',$patient['caseID'])->value('patient_id');
+        $patient=$this->external_patients->where('patient_identifier',$patient_identifier)->first();
+        $patNumber = Wagonjwa::where('patient_id',$patient['patient_identifier'])->value('patient_id');
         $latestPatNo = Wagonjwa::select('pat_no')->whereNotNull('pat_no')->orderBy('id', 'desc')->first();
         //$count=Wagonjwa::count();
         if ($latestPatNo) {
@@ -44,36 +46,48 @@ class ExternalPatientEntry extends Component
 
         // dd($patNumber);
 
-        if($patient && $patient['caseID']!='' && $patNumber==null){
+        if($patient && $patient['patient_identifier']!='' && $patNumber==null){
             DB::transaction(function () use($patient,$pat_no){
                 // dd($patient);
+
+                $fullName = $patient['patient_surname'];
+                $nameArray = explode(" ", $fullName);
+
+                $given_name = $nameArray[0]; // "GYAVIRA"
+                //$lastName = $nameArray[1]; 
                 
                 wagonjwa::create([
                     'pat_no'=>$pat_no,
-                    'patient_id'=>$patient['caseID'],
+                    'patient_id'=>$patient['patient_identifier'],
+                    'sample_id'=>$patient['specimen_uuid'],
                     'surname' => $patient['patient_surname'],
-                    'given_name' => $patient['patient_firstname'],
+                    'given_name' => $patient['patient_firstname'] != '' ? $patient['patient_firstname'] : $given_name,
                     'priority'=>'Normal',
                     'who_tested' => 'Alert',
                     'test_reason' => 'Routine Exposure',
-                    'gender' => $patient['sex'],
-                    'age'=>$patient['age'],
+                    'gender' => $patient['sex'] != '' ? $patient['sex'] : 'N/A',
+                    'age'=>$patient['age']!= '' ? $patient['age'] : 'N/A',
                     'phone_number'=>$patient['patient_contact'],
                     'nationality' => $patient['nationality'],
                     'patient_district' => $patient['swabing_district'],
                     'swab_district' => $patient['swabing_district'],
-                    'collection_date' => $patient['specimen_collection_date'],
-                    'collected_by' => 245,
+                    'collection_date' => $patient['specimen_collection_date'],                    
                     'sample_type' => $patient['sample_type'],
+                    'ever_been_positive' =>'No',
+                    'ever_been_vaccinated'=>'No',
+                    'created_by' => auth()->user()->id,
+                    'collected_by' => 245,
                     'entry_type' => 'RDS',
                     'facility_id'=>70
                 ]);
                 $pat_no='';
+                $this->update_status($patient['specimen_uuid']);
                 $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Patient claimed and created successfully']);
             });
             // dd('success');
         }else{
             $pat_no='';
+            $this->update_status($patient['specimen_uuid']);
             $this->dispatchBrowserEvent('swal:modal', [
                 'type' => 'error',
                 'message' => 'Error',
@@ -81,6 +95,29 @@ class ExternalPatientEntry extends Component
             ]);
         }
        
+    }
+
+    public function update_status($specimen_uuid)
+    {
+        $patient= [
+            "specimen_uuid"=>$specimen_uuid,
+            "lis_id"=>"eyJpdiI6ImVDdDVuNENobUhBSlQrUm9FZjNYc2c9PSIsInZhbHVlIjoiY3VaOStuMkl6S0dQOTVYM01YMWYyQT09IiwibWFjIjoiNzRiNjhkYjM2YWU2YWIzZDJlYTMzZGEwZThmMGVhNWQ3OTVhZjNiZmMxM2NiNGQ5NTMyNWUwNzllOTAzNDM3MSJ9",
+            "eac_lab_id"=>"eyJpdiI6Im52a24wSmtyamN0YXd2TTNPejBkN1E9PSIsInZhbHVlIjoiM2pYbEFEYVRldDNtbE1uMjJ4em9JUT09IiwibWFjIjoiZGViOGE2MjM3YWNjZjdkNDNhYTVmMGMzNDc2MDdiMzUxZjRjMGM3NzRhMTdkMzY5N2U4MTQ4NzhlZmFjZjkxYiJ9",
+            "status" => true
+        ];
+
+        // dd($patient);
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/sync/results', 'verify' => false]);
+        try {
+            $res = $client->request('POST', 'https://apitest.cphluganda.org/sync/results', [
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => json_encode($patient),
+            ]);
+
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => $res->getBody()->getContents()]);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {           
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => $e->getResponse()->getBody()->getContents()]);
+        }
     }
     
     public function render()

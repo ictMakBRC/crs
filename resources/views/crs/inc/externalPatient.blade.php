@@ -19,7 +19,7 @@
                 @foreach ($external_patients as $key => $patient)
                     <tr>
                         <td>{{ $key + 1 }}</td>
-                        <td>{{ $patient['caseID'] }}</td>
+                        <td>{{ $patient['patient_identifier'] }}</td>
                         <td>{{ $patient['patient_surname'] ?? '-' }}</td>
                         <td>{{ $patient['patient_firstname'] ?? '-' }}</td>
                         <td>{{ $patient['sample_type'] ?? '-' }}</td>
