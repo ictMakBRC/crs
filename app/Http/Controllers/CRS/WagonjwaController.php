@@ -1549,14 +1549,14 @@ class WagonjwaController extends Controller
                         'test_method' => $result->test_type != '' ? $result->test_type : null,
                         'tested_by' =>  $result->performedby != '' ? $result->performedby : null,
                         'uploaded_by'  => 'Makerere University College of Health Sciences',
-
+                        'approved_by' => "Lwanga Newton",
                     ], ],
 
             ];
         });
 
         // return $patient[0];
-        return $patient;
+        // return $patient;
         $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/sync/results', 'verify' => false]);
         try {
             $res = $client->request('POST', 'https://apitest.cphluganda.org/sync/results', [
