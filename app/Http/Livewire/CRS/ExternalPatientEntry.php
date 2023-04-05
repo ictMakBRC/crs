@@ -107,9 +107,9 @@ class ExternalPatientEntry extends Component
         ];
 
         // dd($patient);
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/sync/results', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/receive/samples', 'verify' => false]);
         try {
-            $res = $client->request('POST', 'https://apitest.cphluganda.org/sync/results', [
+            $res = $client->request('POST', 'https://apitest.cphluganda.org/receive/samples', [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($patient),
             ]);
