@@ -37,7 +37,7 @@
                                     <td> <input name='id[]' type="checkbox" id="checkItem" value="{{$patient->wid}}"> {{$key+1}}</td>
                                     <td>{{$patient->lab_no}}</td>
                                     <td>{{$patient->patient_id}}</td>
-                                    <td>{{$patient->surname.' '.$patient->given_name.' '.$patient->other_name}}</td>
+                                    <td>{{$patient->surname}}</td>
                                     <td>{{$patient->gender}}</td>
                                     <td>{{$patient->facility_name}}</td>
                                     <td>{{$patient->result}} 
