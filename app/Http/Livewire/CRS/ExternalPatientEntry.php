@@ -46,7 +46,7 @@ class ExternalPatientEntry extends Component
 
         // dd($patNumber);
 
-        if($patient && $patient['patient_identifier']!='' && $patNumber==null){
+        if($patient && $patient['patient_identifier']!='' && $patient['specimen_uuid']!='' && $patNumber==null){
             DB::transaction(function () use($patient,$pat_no){
                 // dd($patient);
 
