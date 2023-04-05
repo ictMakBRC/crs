@@ -1556,7 +1556,7 @@ class WagonjwaController extends Controller
         });
 
         // return $patient[0];
-        // return $patient;
+        return $patient;
         $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/sync/results', 'verify' => false]);
         try {
             $res = $client->request('POST', 'https://apitest.cphluganda.org/sync/results', [
