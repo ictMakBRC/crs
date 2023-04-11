@@ -29,6 +29,32 @@ class WagonjwaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     public function referPatient($id)
+     {
+        $mugonjwa = wagonjwa::find($id);
+        $data= [    
+            'specimen_uuid' => $mugonjwa->sample_id,
+            'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',   
+            'status' => false,
+            'referral_reason' => 'Out of reagents to test these samples',
+            'destination_lab_id'=>'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9'
+        ];
+
+        // dd($patient);
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/receive/samples', 'verify' => false]);
+        try {
+            $res = $client->request('POST', 'https://apitest.cphluganda.org/receive/samples', [
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => json_encode($data),
+            ]);
+            return redirect()->back()->with('success', $res->getBody()->getContents());
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => $res->getBody()->getContents()]);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {     
+            return redirect()->back()->with('error', $e->getResponse()->getBody()->getContents());      
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => $e->getResponse()->getBody()->getContents()]);
+        }
+     }
     public function rdsComplete($id)
     {
         $mugonjwa = wagonjwa::find($id);
@@ -407,7 +433,7 @@ class WagonjwaController extends Controller
             ->select('*', 'wagonjwas.id as wid')
             ->whereDay('wagonjwas.created_at', '=', $today)
             ->whereYear('wagonjwas.created_at', date('Y'))->whereMonth('wagonjwas.created_at', date('m'))
-            ->paginate(99500);
+            ->paginate(10000);
 
             return view('crs.labPatientList', compact('patients'));
         } else {

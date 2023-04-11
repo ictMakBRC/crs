@@ -1,5 +1,13 @@
 <div>
-    <div class="table-responsive" wire:ignore>
+    <div class="d-flex align-items-center">                                                    
+        <div class="btn btn-white">
+            <input class="form-check-input" wire:click="$set('referred',{{ $referred ? 'false' : 'true' }})" @if ($referred)
+                checked
+            @endif  type="checkbox">
+            Referred{{$referred}}
+        </div>       
+    </div>
+    <div class="table-responsive" >
         <table id="datableButtons" class="table">
             <thead>
                 <tr>

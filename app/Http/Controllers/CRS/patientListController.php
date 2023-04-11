@@ -42,11 +42,11 @@ class patientListController extends Controller
         $val = 'd-none';
         $today = Carbon::now();
         $patients = wagonjwa::orderBy('facilities.id', 'desc')
-    ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
-    ->select('*', 'wagonjwas.id as wid')
-    ->where('status', '=', 'collected')
-    ->whereDay('wagonjwas.created_at', '=', $today)
-    ->paginate(500);
+        ->leftJoin('facilities', 'wagonjwas.facility_id', '=', 'facilities.id')
+        ->select('*', 'wagonjwas.id as wid')
+        ->where('status', '=', 'collected')
+        ->whereDay('wagonjwas.created_at', '=', $today)
+        ->paginate(500);
         $state = 'collected';
         $time = 'today';
 

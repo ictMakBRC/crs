@@ -10,24 +10,12 @@ use Illuminate\Support\Facades\DB;
 class ExternalPatientEntry extends Component
 {
     public $external_patients;
-
+    public $referred = false;
     public function mount()
     {
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/covid_suspects', 'verify' => false]);
-        try {
-            $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects',[
-                'auth' => [
-                    'uvri_lims', '4B>{jaE54^_azqR['
-                ]
-            ]);
-
-            $data = collect(json_decode($res->getBody(), true));
-            $this->external_patients=$data;
-            
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $this->external_patients = collect([]);
-        }
-
+       
+           
+           
     }
 
   
@@ -101,8 +89,10 @@ class ExternalPatientEntry extends Component
     {
         $patient= [
             "specimen_uuid"=>$specimen_uuid,
-            "lis_id"=>"eyJpdiI6ImVDdDVuNENobUhBSlQrUm9FZjNYc2c9PSIsInZhbHVlIjoiY3VaOStuMkl6S0dQOTVYM01YMWYyQT09IiwibWFjIjoiNzRiNjhkYjM2YWU2YWIzZDJlYTMzZGEwZThmMGVhNWQ3OTVhZjNiZmMxM2NiNGQ5NTMyNWUwNzllOTAzNDM3MSJ9",
-            "eac_lab_id"=>"eyJpdiI6Im52a24wSmtyamN0YXd2TTNPejBkN1E9PSIsInZhbHVlIjoiM2pYbEFEYVRldDNtbE1uMjJ4em9JUT09IiwibWFjIjoiZGViOGE2MjM3YWNjZjdkNDNhYTVmMGMzNDc2MDdiMzUxZjRjMGM3NzRhMTdkMzY5N2U4MTQ4NzhlZmFjZjkxYiJ9",
+            // "lis_id"=>"eyJpdiI6ImVDdDVuNENobUhBSlQrUm9FZjNYc2c9PSIsInZhbHVlIjoiY3VaOStuMkl6S0dQOTVYM01YMWYyQT09IiwibWFjIjoiNzRiNjhkYjM2YWU2YWIzZDJlYTMzZGEwZThmMGVhNWQ3OTVhZjNiZmMxM2NiNGQ5NTMyNWUwNzllOTAzNDM3MSJ9",
+            // "eac_lab_id"=>"eyJpdiI6Im52a24wSmtyamN0YXd2TTNPejBkN1E9PSIsInZhbHVlIjoiM2pYbEFEYVRldDNtbE1uMjJ4em9JUT09IiwibWFjIjoiZGViOGE2MjM3YWNjZjdkNDNhYTVmMGMzNDc2MDdiMzUxZjRjMGM3NzRhMTdkMzY5N2U4MTQ4NzhlZmFjZjkxYiJ9",
+            'lis_id' => 'eyJpdiI6IlZxbXBoN3BWSFBUTjdXaW1QeE83NHc9PSIsInZhbHVlIjoiYmd3S3FkQ2MxTGIrUWExSnJsbXc2dz09IiwibWFjIjoiYjk2MDRjNjU4MDIxMmJlY2U2OGM4ZGVlODhmZjNkOTQ2NDU4NGJlNjk4OGE2NGI5OTI4ZDdlZWYxODExMjdhMyJ9',
+            'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
             "status" => true
         ];
 
@@ -122,6 +112,29 @@ class ExternalPatientEntry extends Component
     
     public function render()
     {
+        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/covid_suspects', 'verify' => false]);
+        try {
+        if($this->referred){
+            $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects', [
+                // 'auth' => [ 'maklims', 'm@kl!m5.' ]
+                'auth' => ['uvri_lims', '4B>{jaE54^_azqR['],
+               'query' => [
+                       'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
+                       'status' => 'referred',]
+           ]);
+        }else{
+            $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects',[
+                // 'auth' => [ 'maklims', 'm@kl!m5.' ]
+                'auth' => ['uvri_lims', '4B>{jaE54^_azqR[']
+            ]);
+        }
+            $data = collect(json_decode($res->getBody(), true));
+            $this->external_patients=$data;
+            
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $this->external_patients = collect([]);
+        }
+
         return view('livewire.crs.external-patient-entry');
     }
 }

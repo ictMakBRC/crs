@@ -68,6 +68,7 @@
                                             <a href="{{url('patients/lab/edit/'.$patient->wid)}}" class="action-icon {{$val}}"> <i class="mdi mdi-pencil"></i></a>
                                             <a href="{{url('patients/lab/validate/'.$patient->wid)}}" class="action-icon {{$ac}}"> <i class="mdi mdi-account-check"></i></a>
                                             <a  href="{{url('patients/lab/export/'.$patient->wid)}}" class="action-icon {{$val}}"> <i class="mdi mdi-application-export"></i></a>
+                                            <a  href="{{route('refer_patient',$patient->wid)}}" class="action-icon"> <i class="mdi mdi-hospital-building"></i></a>
                                             <a href="javascript: void(0);" class="action-icon {{$sub}}" data-bs-toggle="modal" data-bs-target="#editpending{{$patient->wid}}"><i class="mdi mdi-arrow-up-circle"></i> </a>
                                         </td>
                                     </tr>

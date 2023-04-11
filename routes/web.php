@@ -156,6 +156,7 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
     //===============================all pending==============================================
     Route::get('patients/lab/pending', [patientListController::class, 'pending']);
     Route::get('patients/lab/pending/today', [patientListController::class, 'pending_today']);
+    Route::get('patients/lab/refer/{id}', [WagonjwaController::class, 'referPatient'])->name('refer_patient');
     Route::get('patients/lab/pending/yesterday', [patientListController::class, 'pending_yesterday']);
     Route::get('patients/lab/pending/week', [patientListController::class, 'pending_this_week']);
     Route::get('patients/lab/pending/months', [patientListController::class, 'pending_this_month']);
