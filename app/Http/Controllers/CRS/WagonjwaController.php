@@ -42,9 +42,9 @@ class WagonjwaController extends Controller
         ];
 
         // dd($patient);
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/receive/samples', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://limsapi.cphluganda.org/receive/samples', 'verify' => false]);
         try {
-            $res = $client->request('POST', 'https://apitest.cphluganda.org/receive/samples', [
+            $res = $client->request('POST', 'https://limsapi.cphluganda.org/receive/samples', [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($data),
             ]);
@@ -1560,11 +1560,11 @@ class WagonjwaController extends Controller
                     [
 
                         'specimen_uuid'=>$result->sample_id,
-                        'lis_id'=>"eyJpdiI6Im1Ca3ljNjFDVW5ISU1qNCtmd0M2elE9PSIsInZhbHVlIjoiK2ZHNFB5V3ordTZpM21yMlNaVHcwZz09IiwibWFjIjoiOTRmMDg1NzhkZjQxMWQ1ZTM4NTE1MWI0ZmM4YTliYjk2MmE2M2Q4NzA5MmJiNGM2M2M2MzM2M2NmMmVmM2JhZCJ9",
-                        'eac_lab_id'=>"eyJpdiI6IlYzUzNNcVpWc2RHQzQ5XC90aDNUM25RPT0iLCJ2YWx1ZSI6IlJSZUJwZmxZZWRRTzVcL2tMM2hiUGV3PT0iLCJtYWMiOiJkMzhkNTQ1ZDEyZTYxNzA2ZDU4NGZhMmU2ZDA3NWZjZjYwOTc4N2ZhNzYyYWZmOTk0Y2UzYzFjN2QyMmNjNGU4In0=",
+                        // 'lis_id'=>"eyJpdiI6Im1Ca3ljNjFDVW5ISU1qNCtmd0M2elE9PSIsInZhbHVlIjoiK2ZHNFB5V3ordTZpM21yMlNaVHcwZz09IiwibWFjIjoiOTRmMDg1NzhkZjQxMWQ1ZTM4NTE1MWI0ZmM4YTliYjk2MmE2M2Q4NzA5MmJiNGM2M2M2MzM2M2NmMmVmM2JhZCJ9",
+                        // 'eac_lab_id'=>"eyJpdiI6IlYzUzNNcVpWc2RHQzQ5XC90aDNUM25RPT0iLCJ2YWx1ZSI6IlJSZUJwZmxZZWRRTzVcL2tMM2hiUGV3PT0iLCJtYWMiOiJkMzhkNTQ1ZDEyZTYxNzA2ZDU4NGZhMmU2ZDA3NWZjZjYwOTc4N2ZhNzYyYWZmOTk0Y2UzYzFjN2QyMmNjNGU4In0=",
 
-                        // 'lis_id' => 'eyJpdiI6IlZxbXBoN3BWSFBUTjdXaW1QeE83NHc9PSIsInZhbHVlIjoiYmd3S3FkQ2MxTGIrUWExSnJsbXc2dz09IiwibWFjIjoiYjk2MDRjNjU4MDIxMmJlY2U2OGM4ZGVlODhmZjNkOTQ2NDU4NGJlNjk4OGE2NGI5OTI4ZDdlZWYxODExMjdhMyJ9',
-                        // 'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
+                        'lis_id' => 'eyJpdiI6IlZxbXBoN3BWSFBUTjdXaW1QeE83NHc9PSIsInZhbHVlIjoiYmd3S3FkQ2MxTGIrUWExSnJsbXc2dz09IiwibWFjIjoiYjk2MDRjNjU4MDIxMmJlY2U2OGM4ZGVlODhmZjNkOTQ2NDU4NGJlNjk4OGE2NGI5OTI4ZDdlZWYxODExMjdhMyJ9',
+                        'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
 
                         'specimen_lab_id'=> $result->pat_no != '' ? $result->pat_no : null,
                         'ct_value' => $ct_value,
@@ -1583,9 +1583,9 @@ class WagonjwaController extends Controller
 
         // return $patient[0];
         // return $patient;
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/sync/results', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://limsapi.cphluganda.org/sync/results', 'verify' => false]);
         try {
-            $res = $client->request('POST', 'https://apitest.cphluganda.org/sync/results', [
+            $res = $client->request('POST', 'https://limsapi.cphluganda.org/sync/results', [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($patient[0]),
             ]);

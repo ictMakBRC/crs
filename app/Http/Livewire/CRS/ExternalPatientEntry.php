@@ -33,10 +33,10 @@ class ExternalPatientEntry extends Component
         }
 
         // dd($patNumber);
-
-        if($patient && $patient['patient_identifier']!='' && $patient['specimen_uuid']!='' && $patNumber==null){
+        // dd($patient);
+        if($patient &&  $patient['specimen_uuid']!='' && $patNumber==null){
             DB::transaction(function () use($patient,$pat_no){
-                // dd($patient);
+                //  dd($patient);
 
                 $fullName = $patient['patient_surname'];
                 $nameArray = explode(" ", $fullName);
@@ -97,10 +97,11 @@ class ExternalPatientEntry extends Component
         ];
 
         // dd($patient);
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/receive/samples', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://limsapi.cphluganda.org/receive/samples', 'verify' => false]);
         try {
-            $res = $client->request('POST', 'https://apitest.cphluganda.org/receive/samples', [
+            $res = $client->request('POST', 'https://limsapi.cphluganda.org/receive/samples', [
                 'headers' => ['Content-Type' => 'application/json'],
+                'auth' => [ 'maklims', 'm@kl!m5.' ],
                 'body' => json_encode($patient),
             ]);
 
@@ -112,21 +113,21 @@ class ExternalPatientEntry extends Component
     
     public function render()
     {
-        $client = new Client(['base_uri' => 'https://apitest.cphluganda.org/covid_suspects', 'verify' => false]);
+        $client = new Client(['base_uri' => 'https://limsapi.cphluganda.org/covid_suspects', 'verify' => false]);
         try {
         if($this->referred){
-            $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects', [
-                // 'auth' => [ 'maklims', 'm@kl!m5.' ]
-                'auth' => ['uvri_lims', '4B>{jaE54^_azqR['],
+            $res = $client->request('GET', 'https://limsapi.cphluganda.org/covid_suspects', [
+                'auth' => [ 'maklims', 'm@kl!m5.' ],
+                // 'auth' => ['uvri_lims', '4B>{jaE54^_azqR['],
                'query' => [
                        'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
                        'status' => 'referred',]
            ]);
         }else{
-            $res = $client->request('GET', 'https://apitest.cphluganda.org/covid_suspects',[
-                // 'auth' => [ 'maklims', 'm@kl!m5.' ]
-                'auth' => ['uvri_lims', '4B>{jaE54^_azqR[']
-            ]);
+            $res = $client->request('GET', 'https://limsapi.cphluganda.org/covid_suspects',[
+                'auth' => [ 'maklims', 'm@kl!m5.' ]
+                // 'auth' => ['uvri_lims', '4B>{jaE54^_azqR[']
+            ]); 
         }
             $data = collect(json_decode($res->getBody(), true));
             $this->external_patients=$data;
