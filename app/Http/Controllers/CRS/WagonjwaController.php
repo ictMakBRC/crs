@@ -50,6 +50,7 @@ class WagonjwaController extends Controller
             ]);
             return redirect()->back()->with('success', $res->getBody()->getContents());
             $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => $res->getBody()->getContents()]);
+            $mugonjwa = wagonjwa::where('id',$id)->update(['status'=>'Referred']);
         } catch (\GuzzleHttp\Exception\RequestException $e) {     
             return redirect()->back()->with('error', $e->getResponse()->getBody()->getContents());      
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => $e->getResponse()->getBody()->getContents()]);
