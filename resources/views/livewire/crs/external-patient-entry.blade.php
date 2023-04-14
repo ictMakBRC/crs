@@ -12,10 +12,9 @@
             <thead>
                 <tr>
                     <th>No.</th>
-                    <th>Case ID</th>
+                    <th>Sample ID</th>
                     <th>Patient UUID</th>
-                    <th>Surname</th>
-                    <th>First Name</th>
+                    <th>Patient Name</th>
                     <th>Sample Type</th>
                     <th>Collection Date</th>
                     <th>Swab District</th>
@@ -28,15 +27,14 @@
                 @foreach ($external_patients as $key => $patient)
                     <tr>
                         <td>{{ $key + 1 }}</td>
-                        <td>{{ $patient['patient_identifier'] }}</td>
+                        <td>{{ $patient['specimen_identifier'] }}</td>
                         <td>{{ $patient['specimen_uuid'] }}</td>
                         <td>{{ $patient['patient_surname'] ?? '-' }}</td>
-                        <td>{{ $patient['patient_firstname'] ?? '-' }}</td>
                         <td>{{ $patient['sample_type'] ?? '-' }}</td>
                         <td>{{ $patient['request_date'] ?? '-' }}</td>
                         <td>{{ $patient['swabing_district'] ?? '-' }}</td>
                         <td class="table-action">
-                            <button type="button" class="btn btn-success" wire:click="claimPatient('{{$patient['patient_identifier']}}')"><i class="dripicons-arrow-down"></i></button>
+                            <button type="button" class="btn btn-success" wire:click="claimPatient('{{$patient['specimen_identifier']}}')"><i class="dripicons-arrow-down"></i></button>
                         </td>
                     </tr>
                 @endforeach

@@ -20,10 +20,10 @@ class ExternalPatientEntry extends Component
 
   
 
-    public function claimPatient($patient_identifier)
+    public function claimPatient($specimen_identifier)
     {
-        $patient=$this->external_patients->where('patient_identifier',$patient_identifier)->first();
-        $patNumber = Wagonjwa::where('patient_id',$patient['patient_identifier'])->value('patient_id');
+        $patient=$this->external_patients->where('specimen_identifier',$specimen_identifier)->first();
+        $patNumber = Wagonjwa::where('patient_id',$patient['specimen_identifier'])->value('patient_id');
         $latestPatNo = Wagonjwa::select('pat_no')->whereNotNull('pat_no')->orderBy('id', 'desc')->first();
         //$count=Wagonjwa::count();
         if ($latestPatNo) {
@@ -46,7 +46,7 @@ class ExternalPatientEntry extends Component
                 
                 wagonjwa::create([
                     'pat_no'=>$pat_no,
-                    'patient_id'=>$patient['patient_identifier'],
+                    'patient_id'=>$patient['patient_identifier']!= '' ? $patient['patient_identifier'] : $patient['specimen_identifier'],
                     'sample_id'=>$patient['specimen_uuid'],
                     'surname' => $patient['patient_surname'],
                     'given_name' => $patient['patient_firstname'] != '' ? $patient['patient_firstname'] : $given_name,
@@ -69,7 +69,8 @@ class ExternalPatientEntry extends Component
                     'facility_id'=>70
                 ]);
                 $pat_no='';
-                $this->update_status($patient['specimen_uuid']);
+                // $this->update_status($patient['specimen_uuid']);
+                $this->RESTRACK($patient['specimen_identifier']);
                 $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Patient claimed and created successfully']);
             });
             // dd('success');
@@ -104,8 +105,30 @@ class ExternalPatientEntry extends Component
                 'auth' => [ 'maklims', 'm@kl!m5.' ],
                 'body' => json_encode($patient),
             ]);
-
             $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => $res->getBody()->getContents()]);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {           
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => $e->getResponse()->getBody()->getContents()]);
+        }
+
+       
+    }
+
+    public function RESTRACK($specimen_identifier)
+    {
+        $patient1= [
+            "sample_identifier"=>$specimen_identifier,           
+            'ref_lab_id' => 'Y3K5vv9cdJ7',
+            "receipt_date" => date('Y-m-d')
+        ];
+        // dd($patient1);
+        $client1 = new Client(['base_uri' => 'https://homtest.cphluganda.org/api/restrack/receive_sample/', 'verify' => false]);
+        try {
+            $res1 = $client1->request('POST', 'https://homtest.cphluganda.org/api/restrack/receive_sample/', [
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => json_encode($patient1),
+            ]);
+
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => $res1->getBody()->getContents()]);
         } catch (\GuzzleHttp\Exception\RequestException $e) {           
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => $e->getResponse()->getBody()->getContents()]);
         }
