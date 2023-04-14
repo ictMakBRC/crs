@@ -47,10 +47,10 @@ class WagonjwaController extends Controller
             $res = $client->request('POST', 'https://limsapi.cphluganda.org/receive/samples', [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($data),
-            ]);
-            return redirect()->back()->with('success', $res->getBody()->getContents());
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => $res->getBody()->getContents()]);
-            $mugonjwa = wagonjwa::where('id',$id)->update(['status'=>'Referred']);
+            ]);       
+          $mugonjwa->status = 'Referred';
+          $mugonjwa-> update();          
+          return redirect()->back()->with('success', $res->getBody()->getContents());
         } catch (\GuzzleHttp\Exception\RequestException $e) {     
             return redirect()->back()->with('error', $e->getResponse()->getBody()->getContents());      
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => $e->getResponse()->getBody()->getContents()]);

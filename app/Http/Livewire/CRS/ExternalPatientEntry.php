@@ -69,7 +69,7 @@ class ExternalPatientEntry extends Component
                     'facility_id'=>70
                 ]);
                 $pat_no='';
-                // $this->update_status($patient['specimen_uuid']);
+                $this->update_status($patient['specimen_uuid']);
                 $this->RESTRACK($patient['specimen_identifier']);
                 $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Patient claimed and created successfully']);
             });
