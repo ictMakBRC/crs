@@ -1567,7 +1567,7 @@ class WagonjwaController extends Controller
                         'lis_id' => 'eyJpdiI6IlZxbXBoN3BWSFBUTjdXaW1QeE83NHc9PSIsInZhbHVlIjoiYmd3S3FkQ2MxTGIrUWExSnJsbXc2dz09IiwibWFjIjoiYjk2MDRjNjU4MDIxMmJlY2U2OGM4ZGVlODhmZjNkOTQ2NDU4NGJlNjk4OGE2NGI5OTI4ZDdlZWYxODExMjdhMyJ9',
                         'eac_lab_id' => 'eyJpdiI6IklYR1Exb3M5UjRSYzN5SjlSa1ZjNWc9PSIsInZhbHVlIjoiV1pBSHNsdURyaGp4cEJYR0t3V0t3QT09IiwibWFjIjoiMWY3NDM1N2E4MmQxMTU2OTk4ZjIwMGQ2MDUxNzViMGRhZjY1ZDg4NjE3Y2IyZDYxMWQzMDdlMTU1NjE5Yzg2ZiJ9',
 
-                        'specimen_lab_id'=> $result->pat_no != '' ? $result->pat_no : null,
+                        'specimen_lab_id'=> $result->lab_no != '' ? $result->lab_no : null,
                         'ct_value' => $ct_value,
                         'result' => $result->result != '' ? $result->result : null,
                         'test_date' => $result->result_added_at != '' ? $result->result_added_at : null,
