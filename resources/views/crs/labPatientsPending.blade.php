@@ -29,7 +29,7 @@
                                         <th>Lab No</th>
                                         <th>Pat No</th>
                                         <th>Patient ID</th>
-                                        <th>Passport</th>
+                                        {{-- <th>Passport</th> --}}
                                         <!--<th>Priority</th>-->
                                         <th>Names</th>
                                         <!--<th>Gender</th>-->
