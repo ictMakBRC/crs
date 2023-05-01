@@ -39,8 +39,9 @@ use App\Http\Controllers\PatientRegController;
 
 Route::get('home', function () {
  
-Artisan::call('backup:run');
+// Artisan::call('backup:run');
   //Storage::disk('google')->put('try.txt',"Hello ked");
+  Artisan::call('storage:link');
   dd(Artisan::output());
   //  return 'Done';
 
