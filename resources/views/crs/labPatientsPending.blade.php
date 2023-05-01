@@ -52,7 +52,7 @@
                                          <td>{{$patient->lab_no?$patient->lab_no:'N/A'}}</td>
                                         <td>{{$patient->pat_no}}</td>
                                         <td>{{$patient->patient_id}}</td>
-                                        <td>{{$patient->doc_no}}</td>
+                                        {{-- <td>{{$patient->doc_no}}</td> --}}
                                         <!--@if ($patient->priority!='Emergency')-->
                                         <!--<td><span class="badge bg-success">{{$patient->priority?$patient->priority:'N/A'}}</span></td> -->
                                         <!--@else-->
