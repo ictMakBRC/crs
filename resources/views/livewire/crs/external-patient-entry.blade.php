@@ -4,7 +4,7 @@
             <input class="form-check-input" wire:click="$set('referred',{{ $referred ? 'false' : 'true' }})" @if ($referred)
                 checked
             @endif  type="checkbox">
-            Referred({{$external_patients->count}})
+            Referred({{$external_patients->count()}})
         </div>       
     </div>
     <div class="table-responsive" >
