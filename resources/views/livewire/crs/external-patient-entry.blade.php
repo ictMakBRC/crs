@@ -1,10 +1,10 @@
 <div>
-    <div class="d-flex align-items-center">                                                    
+    <div class="d-flex align-items-center float-end">                                                    
         <div class="btn btn-white">
             <input class="form-check-input" wire:click="$set('referred',{{ $referred ? 'false' : 'true' }})" @if ($referred)
                 checked
             @endif  type="checkbox">
-            Referred{{$referred}}
+            Referred({{$external_patients->count}})
         </div>       
     </div>
     <div class="table-responsive" >
