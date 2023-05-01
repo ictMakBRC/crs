@@ -9,6 +9,16 @@
                             @if(Auth::user()->hasRole(['DataAdmin','ResultsQC']))
                             <div class="tab-pane" id="finish-2">
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <ul class="nav nav-pills nav-justified form-wizard-header mb-3">
+                                            <li class="nav-item">
+                                                <a href="#account-2" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 pt-2 pb-2 active">
+                                                    <i class="uil-medical-square"></i>
+                                                    <span class="d-none d-sm-inline">Add {{ $value->surname }}  {{ $value->given_name }} (Patient: {{ $value->lab_no?$value->lab_no:$value->patient_id }}) Results</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                     <form method="POST" action="{{url('patient/lab/result/update/'.$value->wid)}}" enctype="multipart/form-data">
                                         @csrf
                                         <div class="col-12">
