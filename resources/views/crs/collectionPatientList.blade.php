@@ -39,8 +39,9 @@
                                         <a onclick="return confirm('Are you sure you want to cancel {{$patient->surname.' '.$patient->given_name}} sample?');" 
                                         href="{{url('patients/cancel/'.$patient->wid)}}" class="action-icon text-danger text-sm"> <i class="mdi mdi-cancel"></i></a>
                                         @endif
-                                        @if($patient->status=='Completed')
+                                        @if($patient->status=='Completed' && $patient->status=='Result Added')
                                         <a target="_blanck" href="{{url('patients/result/print/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-printer"></i></a>
+                                        <a  href="{{url('patients/result/download/'.$patient->wid)}}" class="action-icon"> <i class="mdi mdi-download"></i></a>
                                         @endif
                                         {{-- <a href="#" class="action-icon"> <i class="mdi mdi-delete"></i></a> --}}
                                     </td>
